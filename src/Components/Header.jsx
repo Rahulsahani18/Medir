@@ -114,12 +114,10 @@ export default function Header() {
             src={Logo}
             alt="Logo"
             style={{ height: "50px", cursor: "pointer" }}
-            onClick={(e) =>
-            {
+            onClick={(e) => {
               e.stopPropagation();
-                 navigate("/")}
-            }
-           
+              navigate("/");
+            }}
           />
 
           {/* Right Side Icons + Buttons */}
@@ -130,12 +128,24 @@ export default function Header() {
             />
 
             {/* Custom Styled Buttons */}
-            <button className="custom-btn custom-btn-primary fw-normal d-flex align-items-center gap-2 px-3 py-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate("/login");
+              }}
+              className="custom-btn custom-btn-primary fw-normal d-flex align-items-center gap-2 px-3 py-2"
+            >
               <FaUserPlus />
               Sign Up
             </button>
 
-            <button className="custom-btn custom-btn-dark fw-normal d-flex align-items-center gap-2 px-3 py-2">
+            <button
+              onClick={(e) => {
+          
+                navigate("/register");
+              }}
+              className="custom-btn custom-btn-dark fw-normal d-flex align-items-center gap-2 px-3 py-2"
+            >
               <FaSignInAlt />
               Register
             </button>
