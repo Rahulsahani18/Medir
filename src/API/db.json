@@ -1,0 +1,252 @@
+{
+  "doctors": [
+    {
+      "id": 1,
+      "name": "Dr. Charles Scott",
+      "specialty": "Neurology",
+      "rating": 4.8,
+      "location": "New York, NY",
+      "duration": "30 Min",
+      "fee": 600,
+      "gender": "Male",
+      "experience": 20,
+      "languages": ["English", "French"],
+      "availableToday": true,
+      "nextAvailable": "10:00 AM - 15 Oct, Tue",
+      "qualifications": "MBBS, DNB - Neurology",
+      "votes": "98% (252 / 287 Votes)",
+      "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face",
+      "specialtyColor": "text-teal",
+      "profile": {
+        "about": "Dr. Charles Scott is a renowned neurologist with over 20 years of experience in treating complex neurological disorders. He specializes in epilepsy, stroke, and movement disorders.",
+        "education": [
+          {
+            "degree": "MBBS",
+            "institution": "Harvard Medical School",
+            "year": "2003"
+          },
+          {
+            "degree": "DNB - Neurology",
+            "institution": "Johns Hopkins Hospital",
+            "year": "2007"
+          }
+        ],
+        "services": [
+          "Neurological Consultation",
+          "EEG Testing",
+          "EMG Testing",
+          "Stroke Management",
+          "Epilepsy Treatment"
+        ],
+        "awards": [
+          "Best Neurologist Award 2020",
+          "Excellence in Patient Care 2019"
+        ],
+        "memberships": [
+          "American Academy of Neurology",
+          "International Neurological Society"
+        ],
+        "contact": {
+          "phone": "+1 (555) 123-4567",
+          "email": "dr.charles.scott@example.com",
+          "website": "www.drcharlesscott.com"
+        },
+        "businessHours": [
+          { "day": "Monday", "hours": "9:00 AM - 5:00 PM" },
+          { "day": "Tuesday", "hours": "9:00 AM - 5:00 PM" },
+          { "day": "Wednesday", "hours": "9:00 AM - 5:00 PM" },
+          { "day": "Thursday", "hours": "9:00 AM - 5:00 PM" },
+          { "day": "Friday", "hours": "9:00 AM - 4:00 PM" },
+          { "day": "Saturday", "hours": "10:00 AM - 2:00 PM" },
+          { "day": "Sunday", "hours": "Closed" }
+        ],
+        "reviews": [
+          {
+            "id": 1,
+            "patient": "John Smith",
+            "rating": 5,
+            "date": "2 days ago",
+            "comment": "Excellent neurologist! Very thorough and caring.",
+            "verified": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "Dr. Robert Thomas",
+      "specialty": "Cardiology",
+      "rating": 4.3,
+      "location": "Los Angeles, CA",
+      "duration": "45 Min",
+      "fee": 450,
+      "gender": "Male",
+      "experience": 30,
+      "languages": ["English", "Spanish"],
+      "availableToday": false,
+      "nextAvailable": "11:00 AM - 19 Oct, Sat",
+      "qualifications": "MBBS, MD - Cardiology",
+      "votes": "92% (270 / 300 Votes)",
+      "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&h=300&fit=crop&crop=face",
+      "specialtyColor": "text-info",
+      "profile": {
+        "about": "Dr. Robert Thomas is a senior cardiologist with 30 years of experience in interventional cardiology and heart disease prevention.",
+        "education": [
+          {
+            "degree": "MBBS",
+            "institution": "Stanford University",
+            "year": "1993"
+          },
+          {
+            "degree": "MD - Cardiology",
+            "institution": "Cleveland Clinic",
+            "year": "1998"
+          }
+        ],
+        "services": [
+          "Cardiac Consultation",
+          "Echocardiography",
+          "Stress Testing",
+          "Angioplasty",
+          "Pacemaker Implantation"
+        ],
+        "awards": [
+          "Lifetime Achievement Award 2021",
+          "Cardiologist of the Year 2018"
+        ],
+        "memberships": [
+          "American College of Cardiology",
+          "European Society of Cardiology"
+        ],
+        "contact": {
+          "phone": "+1 (555) 234-5678",
+          "email": "dr.robert.thomas@example.com",
+          "website": "www.drrobertthomas.com"
+        },
+        "businessHours": [
+          { "day": "Monday", "hours": "8:00 AM - 4:00 PM" },
+          { "day": "Tuesday", "hours": "8:00 AM - 4:00 PM" },
+          { "day": "Wednesday", "hours": "8:00 AM - 4:00 PM" },
+          { "day": "Thursday", "hours": "8:00 AM - 4:00 PM" },
+          { "day": "Friday", "hours": "8:00 AM - 3:00 PM" },
+          { "day": "Saturday", "hours": "Closed" },
+          { "day": "Sunday", "hours": "Closed" }
+        ],
+        "reviews": [
+          {
+            "id": 1,
+            "patient": "Maria Garcia",
+            "rating": 4,
+            "date": "1 week ago",
+            "comment": "Very knowledgeable and experienced cardiologist.",
+            "verified": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "name": "Dr. Margaret Koller",
+      "specialty": "Psychiatry",
+      "rating": 4.7,
+      "location": "Chicago, IL",
+      "duration": "50 Min",
+      "fee": 700,
+      "gender": "Female",
+      "experience": 15,
+      "languages": ["English", "Portuguese"],
+      "availableToday": true,
+      "nextAvailable": "10:30 AM - 29 Oct, Tue",
+      "qualifications": "B.S, M.S - Psychology",
+      "votes": "94% (268 / 312 Votes)",
+      "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&crop=face",
+      "specialtyColor": "text-indigo",
+      "profile": {
+        "about": "Dr. Margaret Koller specializes in cognitive behavioral therapy and has helped numerous patients overcome anxiety and depression.",
+        "education": [
+          {
+            "degree": "B.S Psychology",
+            "institution": "University of Chicago",
+            "year": "2005"
+          },
+          {
+            "degree": "M.S Clinical Psychology",
+            "institution": "Columbia University",
+            "year": "2008"
+          }
+        ],
+        "services": [
+          "Psychiatric Evaluation",
+          "Cognitive Behavioral Therapy",
+          "Anxiety Treatment",
+          "Depression Management",
+          "Couples Counseling"
+        ],
+        "awards": [
+          "Mental Health Advocate Award 2022",
+          "Excellence in Therapy 2019"
+        ],
+        "memberships": [
+          "American Psychiatric Association",
+          "International Psychology Association"
+        ],
+        "contact": {
+          "phone": "+1 (555) 345-6789",
+          "email": "dr.margaret.koller@example.com",
+          "website": "www.drmargaretkoller.com"
+        },
+        "businessHours": [
+          { "day": "Monday", "hours": "10:00 AM - 6:00 PM" },
+          { "day": "Tuesday", "hours": "10:00 AM - 6:00 PM" },
+          { "day": "Wednesday", "hours": "10:00 AM - 6:00 PM" },
+          { "day": "Thursday", "hours": "10:00 AM - 6:00 PM" },
+          { "day": "Friday", "hours": "10:00 AM - 5:00 PM" },
+          { "day": "Saturday", "hours": "9:00 AM - 1:00 PM" },
+          { "day": "Sunday", "hours": "Closed" }
+        ],
+        "reviews": [
+          {
+            "id": 1,
+            "patient": "David Wilson",
+            "rating": 5,
+            "date": "3 days ago",
+            "comment": "Dr. Koller changed my life with her therapy sessions.",
+            "verified": true
+          }
+        ]
+      }
+    }
+  ],
+  "specialties": [
+    "Aesthetic and Anti-aging Medicine", "Allergy & Immunology", "Anatomic Pathology", "Anesthesia", "Audiology",
+    "Brain & Spine Surgery", "Breast Surgery", "Cardiac Anesthesia", "Cardiac Surgery", "Cardiology",
+    "Cardiothoracic Surgery", "Chinese and Oriental Medicine", "Chiropractic", "Colorectal & Laparoscopic Surgery",
+    "Cosmetic Surgery", "Dental Surgery", "Dentistry", "Dermatology", "Dermatology & Cosmetology", "Diabetology",
+    "Diabetology & Endocrinology", "Dietetics", "Emergency Medicine", "Endocrine & Breast Surgery", "Endocrinology",
+    "Endodontics", "ENT", "ENT & Head Neck Surgery", "ENT Surgery", "Family & Occupational Medicine", "Family Physician",
+    "Gastroenterology", "Gastroenterology & Diabetology", "Gastroenterology & Hepatology", "General & Bariatric Surgery",
+    "General Medicine", "General Physician", "General Surgery", "Geriatric Medicine", "Haematology",
+    "Hair Implantation and Transplantation", "Hematology Oncology", "Hepatology", "HistopathologY", "Homeopathic",
+    "Infectious Diseases", "Infertility Specialist", "Intensivist", "Internal Medicine", "Interventional Cardiology",
+    "Interventional Neurology", "Liver Transplantation Hepatobiliary & Pancreatic Surgery", "Medical Specialist",
+    "Medicine", "Microbiology", "Neonatology", "Nephrology", "Nephrology & Dialysis", "Neurology", "Neuroradiology",
+    "Neurosurgery", "Nuclear Cardiology", "Nuclear Medicine", "Nuclear Medicine and Molecular Imaging", "Nutrition",
+    "Obstetrics & Gynecology", "Oncology", "Oncoplastic Breast Surgery", "Ophthalmology", "Optometry",
+    "Oral & Maxillofacial Surgery", "Orthodontics", "Orthopedic", "Otolaryngologist", "Paedodontics (Pediatric Dentistry)",
+    "Pain Management", "Palliative Medicine", "Pathology", "Pediatric and Adolescent Psychiatry", "Pediatric Anesthesia",
+    "Pediatric Cardiac Surgery", "Pediatric Cardiology", "Pediatric Endocrinology", "Pediatric Gastroenterology",
+    "Pediatric Hematology-Oncology", "Pediatric Nephrology", "Pediatric Neurosurgery", "Pediatric Physiotherapy",
+    "Pediatric Radiology", "Pediatric Surgery", "Pediatric Urology", "Pediatrics", "Periodontics",
+    "Physical Medicine & Rehabilitation", "Physical Therapy", "Physiotherapy", "Plastic Surgery", "Podiatry",
+    "Prosthodontics", "Psychiatry", "Psychology", "Public & Community Health", "Pulmonology", "Pulmonology & Critical Care",
+    "Pulmonology and Sleep Medicine", "Radiation Oncology", "Radiology", "Regenerative Medicine", "Rehabilitation",
+    "Rheumatology", "Sonologist", "Speech Therapy", "Spinal and Orthopedic Surgery", "Urology", "Vascular Surgery"
+  ],
+  "locations": [
+    "New York, NY", "Los Angeles, CA", "Chicago, IL", "Houston, TX", "Phoenix, AZ", "Philadelphia, PA",
+    "San Antonio, TX", "San Diego, CA", "Dallas, TX", "San Jose, CA", "Austin, TX", "Jacksonville, FL",
+    "Fort Worth, TX", "Columbus, OH", "Charlotte, NC", "San Francisco, CA", "Indianapolis, IN", "Seattle, WA",
+    "Denver, CO", "Washington, DC", "Boston, MA", "El Paso, TX", "Nashville, TN", "Detroit, MI",
+    "Oklahoma City, OK", "Portland, OR", "Las Vegas, NV", "Memphis, TN", "Louisville, KY", "Baltimore, MD"
+  ]
+}
