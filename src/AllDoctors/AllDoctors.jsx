@@ -13,6 +13,7 @@ import {
   Clock,
   Building,
 } from "lucide-react";
+import { HiBuildingOffice2, HiChevronDown as HiChevronDownIcon } from "react-icons/hi2";
 import "../AllDoctors/AllDoctors.css";
 
 const AllDoctors = () => {
@@ -22,15 +23,24 @@ const AllDoctors = () => {
   // Get search parameters from navigation state
   const searchParams = location.state || {};
 
-  console.log("Received search params in AllDoctors:", searchParams);
-
-  // Initialize state with search parameters from home page
-  const [searchQuery, setSearchQuery] = useState(
+  // Initialize state for search inputs (not applied filters yet)
+  const [searchInput, setSearchInput] = useState(
     searchParams.searchQuery || ""
   );
-  const [locationQuery, setLocationQuery] = useState(
+  const [locationInput, setLocationInput] = useState(
     searchParams.locationQuery || ""
   );
+  
+  // State for applied filters (what's actually being used to filter)
+  const [appliedSearch, setAppliedSearch] = useState(
+    searchParams.searchQuery || ""
+  );
+  const [appliedLocation, setAppliedLocation] = useState(
+    searchParams.locationQuery || ""
+  );
+  
+  const [showSpecialitiesDropdown, setShowSpecialitiesDropdown] = useState(false);
+  const [showLocationsDropdown, setShowLocationsDropdown] = useState(false);
   const [viewMode, setViewMode] = useState("list");
   const [expandedFilters, setExpandedFilters] = useState({
     specialities: true,
@@ -53,6 +63,10 @@ const AllDoctors = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const doctorsPerPage = 9;
+
+  // Refs for dropdown close handling
+  const specialityRef = useRef(null);
+  const locationRef = useRef(null);
 
   // All Medical Specialities
   const medicalSpecialities = [
@@ -460,52 +474,95 @@ const AllDoctors = () => {
   const availabilityOptions = ["Available Today", "Available Tomorrow"];
   const genders = ["Male", "Female"];
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (specialityRef.current && !specialityRef.current.contains(event.target)) {
+        setShowSpecialitiesDropdown(false);
+      }
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setShowLocationsDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Effect to handle when search parameters are passed from home page
   useEffect(() => {
     if (searchParams.searchQuery || searchParams.locationQuery) {
-      console.log("Processing search params from Home:", {
-        searchQuery: searchParams.searchQuery,
-        locationQuery: searchParams.locationQuery,
-      });
-
-      // Auto-set the search query and location query
-      if (searchParams.searchQuery) {
-        setSearchQuery(searchParams.searchQuery);
-      }
-      if (searchParams.locationQuery) {
-        setLocationQuery(searchParams.locationQuery);
-      }
+      console.log("Processing search params from Home:", searchParams);
+      
+      // Set both input values and applied filters
+      setSearchInput(searchParams.searchQuery || "");
+      setLocationInput(searchParams.locationQuery || "");
+      setAppliedSearch(searchParams.searchQuery || "");
+      setAppliedLocation(searchParams.locationQuery || "");
     }
   }, [searchParams]);
 
-  // Filter doctors based on search and filters
-  const filteredDoctors = allDoctors.filter((doctor) => {
-    // Search filter - match by specialty or name (case insensitive)
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch =
-      searchQuery === "" ||
-      doctor.name.toLowerCase().includes(searchLower) ||
-      doctor.specialty.toLowerCase().includes(searchLower) ||
-      doctor.qualifications.toLowerCase().includes(searchLower);
+  // Handle speciality selection from dropdown
+  const handleSpecialitySelect = (speciality) => {
+    setSearchInput(speciality);
+    setShowSpecialitiesDropdown(false);
+  };
 
-    // Location filter (case insensitive)
-    const locationLower = locationQuery.toLowerCase();
+  // Handle location selection from dropdown
+  const handleLocationSelect = (location) => {
+    setLocationInput(location);
+    setShowLocationsDropdown(false);
+  };
+
+  // Handle speciality input click
+  const handleSpecialityInputClick = () => {
+    setShowSpecialitiesDropdown(true);
+    setShowLocationsDropdown(false);
+  };
+
+  // Handle location input click
+  const handleLocationInputClick = () => {
+    setShowLocationsDropdown(true);
+    setShowSpecialitiesDropdown(false);
+  };
+
+  // Handle search button click
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Apply the search filters only when button is clicked
+    setAppliedSearch(searchInput);
+    setAppliedLocation(locationInput);
+    setCurrentPage(1); // Reset to first page on new search
+  };
+
+  // Filter doctors based on APPLIED search and filters
+  const filteredDoctors = allDoctors.filter((doctor) => {
+    // Speciality filter (using APPLIED search, not input)
+    const specialityLower = appliedSearch.toLowerCase();
+    const matchesSpeciality =
+      appliedSearch === "" ||
+      doctor.specialty.toLowerCase().includes(specialityLower) ||
+      doctor.name.toLowerCase().includes(specialityLower) ||
+      doctor.qualifications.toLowerCase().includes(specialityLower);
+
+    // Location filter (using APPLIED location, not input)
+    const locationLower = appliedLocation.toLowerCase();
     const matchesLocation =
-      locationQuery === "" ||
+      appliedLocation === "" ||
       doctor.location.toLowerCase().includes(locationLower);
 
-    // Specialities filter
-    const matchesSpecialities =
+    // Checkbox filters
+    const matchesCheckboxSpecialities =
       filters.specialities.length === 0 ||
       filters.specialities.some((speciality) =>
         doctor.specialty.toLowerCase().includes(speciality.toLowerCase())
       );
 
-    // Gender filter
     const matchesGender =
       filters.gender.length === 0 || filters.gender.includes(doctor.gender);
 
-    // Availability filter
     const matchesAvailability =
       filters.availability.length === 0 ||
       (filters.availability.includes("Available Today") &&
@@ -513,12 +570,10 @@ const AllDoctors = () => {
       (filters.availability.includes("Available Tomorrow") &&
         !doctor.availableToday);
 
-    // Languages filter
     const matchesLanguages =
       filters.languages.length === 0 ||
       filters.languages.some((lang) => doctor.languages.includes(lang));
 
-    // Experience filter
     const matchesExperience =
       filters.experience.length === 0 ||
       (filters.experience.includes("2+ Years") && doctor.experience >= 2) ||
@@ -527,9 +582,9 @@ const AllDoctors = () => {
       (filters.experience.includes("15+ Years") && doctor.experience >= 15);
 
     return (
-      matchesSearch &&
+      matchesSpeciality &&
       matchesLocation &&
-      matchesSpecialities &&
+      matchesCheckboxSpecialities &&
       matchesGender &&
       matchesAvailability &&
       matchesLanguages &&
@@ -549,10 +604,10 @@ const AllDoctors = () => {
     return 0;
   });
 
-  // Pagination - Reset to page 1 when filters/search change
+  // Pagination - Reset to page 1 when APPLIED filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, locationQuery, filters]);
+  }, [appliedSearch, appliedLocation, filters]);
 
   const indexOfLastDoctor = currentPage * doctorsPerPage;
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
@@ -583,8 +638,11 @@ const AllDoctors = () => {
       experience: [],
       sortBy: "price-low",
     });
-    setSearchQuery("");
-    setLocationQuery("");
+    // Clear both input and applied filters
+    setSearchInput("");
+    setLocationInput("");
+    setAppliedSearch("");
+    setAppliedLocation("");
   };
 
   const toggleFilterSection = (section) => {
@@ -599,7 +657,10 @@ const AllDoctors = () => {
     return (
       <div className="col-lg-12">
         <div className="card doctor-list-card" 
-
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/doctor-profile/${doctor.id}`)
+          }}
         >
           <div className="d-md-flex align-items-center">
             {/* Doctor Image */}
@@ -702,12 +763,11 @@ const AllDoctors = () => {
                     </p>
                   </div>
                   <a
-                  onClick={(e)=>{
-                    e.stopPropagation()
-                    navigate("/booking")}
-                  }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate("/booking");
+                    }}
                     className="btn btn-md btn-primary-gradient d-inline-flex align-items-center rounded-pill"
-                 
                   >
                     <Calendar size={14} className="me-2" />
                     Book Appointment
@@ -725,9 +785,12 @@ const AllDoctors = () => {
   const DoctorCardGrid = ({ doctor }) => {
     return (
       <div className="col-lg-4 col-md-6 mb-4">
-        <div className="allDoctors-doctor-card " onClick={(e) =>  {
-                e.stopPropagation();
-                navigate(`/doctor-profile/${doctor.id}`)}}>
+        <div className="allDoctors-doctor-card" 
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/doctor-profile/${doctor.id}`);
+          }}
+        >
           <div className="allDoctors-doctor-image-wrapper">
             <img
               src={doctor.image}
@@ -769,14 +832,15 @@ const AllDoctors = () => {
                   className="btn-view-profile btn-primary-gradient rounded-pill"
                   onClick={() => navigate(`/doctor-profile/${doctor.id}`)}
                 >
-                  {/* <User size={14} className="me-1" /> */}
                   View Profile
                 </button>
               </div>
-              <button className="btn-primary-gradient rounded-pill" 
-              onClick={(e) =>  {
-                e.stopPropagation();
-                navigate("/booking")}}
+              <button
+                className="btn-primary-gradient rounded-pill"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate("/booking");
+                }}
               >
                 Book Now
               </button>
@@ -826,11 +890,6 @@ const AllDoctors = () => {
     </label>
   );
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // Search is already handled by the state updates
-  };
-
   return (
     <div className="allDoctors-container">
       <div className="container-fluid">
@@ -841,30 +900,92 @@ const AllDoctors = () => {
           </h1>
           <div className="AllDoctor-search-box">
             <form className="d-flex align-items-center" onSubmit={handleSearch}>
-              <div className="search-input-wrapper">
+              {/* Speciality Selection Dropdown */}
+              <div className="search-input-wrapper speciality-select-wrapper" ref={specialityRef}>
                 <i className="search-icon">
-                  <Building size={20} />
+                  <HiBuildingOffice2 size={20} />
                 </i>
-                <input
-                  type="text"
-                  className="search-input"
-                  placeholder="Search doctors, clinics, hospitals..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+                <div className="selection-input-container">
+                  <input
+                    type="text"
+                    className="selection-input"
+                    placeholder="Select Speciality"
+                    value={searchInput}
+                    readOnly
+                    onClick={handleSpecialityInputClick}
+                  />
+                  <button
+                    type="button"
+                    className="dropdown-toggle"
+                    onClick={() => setShowSpecialitiesDropdown(!showSpecialitiesDropdown)}
+                  >
+                    <HiChevronDownIcon size={16} />
+                  </button>
+
+                  {showSpecialitiesDropdown && (
+                    <div className="selection-dropdown-menu">
+                      <div className="selection-list-container">
+                        <div className="selection-header">
+                          <span>What</span>
+                          <h4>Search Doctors, Conditions, or</h4>
+                        </div>
+                        {medicalSpecialities.map((speciality, index) => (
+                          <div
+                            key={index}
+                            className={`selection-option ${searchInput === speciality ? 'selected' : ''}`}
+                            onClick={() => handleSpecialitySelect(speciality)}
+                          >
+                            <span className="option-text">{speciality}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="search-input-wrapper location-input">
+              {/* Location Selection Dropdown */}
+              <div className="search-input-wrapper location-input" ref={locationRef}>
                 <i className="search-icon">
                   <MapPin size={20} />
                 </i>
-                <input
-                  type="text"
-                  className="search-input"
-                  placeholder="Location"
-                  value={locationQuery}
-                  onChange={(e) => setLocationQuery(e.target.value)}
-                />
+                <div className="selection-input-container">
+                  <input
+                    type="text"
+                    className="selection-input"
+                    placeholder="Select Location"
+                    value={locationInput}
+                    readOnly
+                    onClick={handleLocationInputClick}
+                  />
+                  <button
+                    type="button"
+                    className="dropdown-toggle"
+                    onClick={() => setShowLocationsDropdown(!showLocationsDropdown)}
+                  >
+                    <HiChevronDownIcon size={16} />
+                  </button>
+
+                  {showLocationsDropdown && (
+                    <div className="selection-dropdown-menu">
+                      <div className="selection-list-container">
+                        <div className="selection-header">
+                          <span>Where</span>
+                          <h4>Select Location</h4>
+                        </div>
+                        {popularLocations.map((location, index) => (
+                          <div
+                            key={index}
+                            className={`selection-option ${locationInput === location ? 'selected' : ''}`}
+                            onClick={() => handleLocationSelect(location)}
+                          >
+                            <span className="option-text">{location}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <button type="submit" className="btn btn-search">
@@ -983,16 +1104,16 @@ const AllDoctors = () => {
                   <span className="allDoctors-doctors-count">
                     Showing {currentDoctors.length} of {sortedDoctors.length}{" "}
                     Doctors
-                    {searchQuery && (
+                    {appliedSearch && (
                       <span className="search-query-info">
                         {" "}
-                        for "{searchQuery}"
+                        for "{appliedSearch}"
                       </span>
                     )}
-                    {locationQuery && (
+                    {appliedLocation && (
                       <span className="location-query-info">
                         {" "}
-                        in "{locationQuery}"
+                        in "{appliedLocation}"
                       </span>
                     )}
                   </span>

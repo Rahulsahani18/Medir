@@ -9,6 +9,7 @@
   padding: 30px;
   border-radius: 12px;
   margin-bottom: 20px;
+  border: 1px solid #e6e8ee;
   /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
 }
 
@@ -73,7 +74,7 @@
   background: #0056b3;
 }
 
-.allDoctors-filters-sidebar {
+/* .allDoctors-filters-sidebar {
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -81,7 +82,7 @@
   height: fit-content;
   position: sticky;
   top: 20px;
-}
+} */
 
 .allDoctors-filters-header {
   display: flex;
@@ -211,12 +212,12 @@
   padding: 0;
 }
 
-.allDoctors-grid-container {
+/* .allDoctors-grid-container {
   background: white;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .allDoctors-results-header {
   display: flex;
@@ -728,13 +729,6 @@
   padding: 20px 0;
 }
 
-.allDoctors-header {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
-}
 
 .allDoctors-main-title {
   font-size: 28px;
@@ -798,7 +792,8 @@
   background: white;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+  border: 1px solid #e6e8ee;
   height: fit-content;
   position: sticky;
   top: 20px;
@@ -814,7 +809,7 @@
 }
 
 .allDoctors-filters-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: #333;
   margin: 0;
@@ -849,9 +844,9 @@
 }
 
 .allDoctors-filter-title {
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .allDoctors-filter-toggle {
@@ -932,7 +927,8 @@
   background: white;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e6e8ee;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
 }
 
 .allDoctors-results-header {

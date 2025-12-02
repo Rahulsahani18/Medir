@@ -43,7 +43,7 @@ export default function Register() {
         <div className="right-section">
           <div className="login-header">
             <h2>Patient Register</h2>
-            <div className="doctor-toggle">
+            {/* <div className="doctor-toggle">
               <span>Are you a Doctor?</span>
               <label className="toggle-switch">
                 <input 
@@ -53,7 +53,7 @@ export default function Register() {
                 />
                 <span className="toggle-slider"></span>
               </label>
-            </div>
+            </div> */}
           </div>
 
           <div>
@@ -104,11 +104,11 @@ export default function Register() {
             </button>
           </div>
 
-          <div className="divider">
+          {/* <div className="divider">
             <span>or</span>
-          </div>
+          </div> */}
 
-          <div className="social-login">
+          {/* <div className="social-login">
             <button className="btn-social btn-google">
               <svg width="20" height="20" viewBox="0 0 24 24">
                 <path
@@ -136,7 +136,7 @@ export default function Register() {
               </svg>
               Sign in With Facebook
             </button>
-          </div>
+          </div> */}
 
           <div className="signin-link">
             Already have account?{" "}

@@ -33,7 +33,8 @@
 .doctor-profile-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e6e8ee;
+  /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); */
   overflow: hidden;
 }
 
@@ -484,7 +485,8 @@
 .booking-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e6e8ee;
+  /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); */
   padding: 24px;
   margin-bottom: 20px;
 }
@@ -698,4 +700,76 @@
   .location-card {
     flex-direction: column;
   }
+}
+
+
+
+
+
+
+/* Disabled buttons styling */
+.booking-actions.disabled-buttons {
+  position: relative;
+}
+
+.btn-book-now.disabled,
+.btn-consult-online.disabled {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  position: relative;
+}
+
+.btn-book-now.disabled:hover,
+.btn-consult-online.disabled:hover {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  transform: none !important;
+}
+
+.denied-icon {
+  color: #dc3545;
+}
+
+/* Tooltip styling */
+.availability-tooltip {
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #dc3545;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.availability-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #dc3545;
+}
+
+/* Cursor styles */
+.booking-actions.disabled-buttons {
+  cursor: not-allowed;
+}
+
+.btn-book-now:disabled,
+.btn-consult-online:disabled {
+  cursor: not-allowed;
 }

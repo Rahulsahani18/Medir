@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Banner_Bg02 from "../assets/banner-bg-02.png";
 import Banner_Bg04 from "../assets/banner-bg-04.png";
@@ -12,11 +12,7 @@ import Doctor3 from "../assets/Dr.-Sanjay-Rai.jpg";
 import HeroDoctorImg from "../assets/Mask-Group-7-1.png";
 import { HiBuildingOffice2, HiMapPin, HiChevronDown } from "react-icons/hi2";
 import { FaTrophy } from "react-icons/fa";
-import {
-  FaStar,
-  FaUserMd,
-  FaPrescriptionBottleAlt,
-} from "react-icons/fa";
+import { FaStar, FaUserMd, FaPrescriptionBottleAlt } from "react-icons/fa";
 import { HiVideoCamera } from "react-icons/hi";
 import { RiSearchFill } from "react-icons/ri";
 import FeaturedDoctor from "../Pages/FeaturedDoctors";
@@ -28,8 +24,8 @@ import Footer from "../Components/Footer";
 import OurPartners from "./OurPrtners";
 
 const Home = () => {
-  const [selectedSpeciality, setSelectedSpeciality] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedSpeciality, setSelectedSpeciality] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
   const [showSpecialities, setShowSpecialities] = useState(false);
   const [showLocations, setShowLocations] = useState(false);
   const navigate = useNavigate();
@@ -151,7 +147,7 @@ const Home = () => {
     "Speech Therapy",
     "Spinal and Orthopedic Surgery",
     "Urology",
-    "Vascular Surgery"
+    "Vascular Surgery",
   ];
 
   const popularLocations = [
@@ -184,13 +180,16 @@ const Home = () => {
     "Las Vegas, NV",
     "Memphis, TN",
     "Louisville, KY",
-    "Baltimore, MD"
+    "Baltimore, MD",
   ];
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (specialityRef.current && !specialityRef.current.contains(event.target)) {
+      if (
+        specialityRef.current &&
+        !specialityRef.current.contains(event.target)
+      ) {
         setShowSpecialities(false);
       }
       if (locationRef.current && !locationRef.current.contains(event.target)) {
@@ -198,30 +197,30 @@ const Home = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    
+
     // REMOVED THE REQUIRED FIELD VALIDATION
     // Users can search with just speciality, just location, or both
-    
-    console.log('Searching with:', {
+
+    console.log("Searching with:", {
       speciality: selectedSpeciality,
-      location: selectedLocation
+      location: selectedLocation,
     });
 
     // Navigate to AllDoctors page with search parameters
-    navigate('/all-doctors', {
+    navigate("/all-doctors", {
       state: {
         searchQuery: selectedSpeciality,
         locationQuery: selectedLocation,
-        speciality: selectedSpeciality
-      }
+        speciality: selectedSpeciality,
+      },
     });
   };
 
@@ -326,9 +325,15 @@ const Home = () => {
 
                 {/* Search Form */}
                 <div className="search-box-modern">
-                  <form className="d-flex align-items-center" onSubmit={handleSearch}>
+                  <form
+                    className="d-flex align-items-center"
+                    onSubmit={handleSearch}
+                  >
                     {/* Speciality Selection */}
-                    <div className="search-input-wrapper speciality-select-wrapper" ref={specialityRef}>
+                    <div
+                      className="search-input-wrapper speciality-select-wrapper"
+                      ref={specialityRef}
+                    >
                       <i className="search-icon">
                         <HiBuildingOffice2 size={20} />
                       </i>
@@ -341,14 +346,14 @@ const Home = () => {
                           readOnly
                           onClick={handleSpecialityInputClick}
                         />
-                        <button 
+                        <button
                           type="button"
                           className="dropdown-toggle"
                           onClick={() => setShowSpecialities(!showSpecialities)}
                         >
                           <HiChevronDown size={16} />
                         </button>
-                        
+
                         {showSpecialities && (
                           <div className="selection-dropdown-menu">
                             <div className="selection-list-container">
@@ -359,10 +364,18 @@ const Home = () => {
                               {medicalSpecialities.map((speciality, index) => (
                                 <div
                                   key={index}
-                                  className={`selection-option ${selectedSpeciality === speciality ? 'selected' : ''}`}
-                                  onClick={() => handleSpecialitySelect(speciality)}
+                                  className={`selection-option ${
+                                    selectedSpeciality === speciality
+                                      ? "selected"
+                                      : ""
+                                  }`}
+                                  onClick={() =>
+                                    handleSpecialitySelect(speciality)
+                                  }
                                 >
-                                  <span className="option-text">{speciality}</span>
+                                  <span className="option-text">
+                                    {speciality}
+                                  </span>
                                 </div>
                               ))}
                             </div>
@@ -372,7 +385,10 @@ const Home = () => {
                     </div>
 
                     {/* Location Selection */}
-                    <div className="search-input-wrapper location-input" ref={locationRef}>
+                    <div
+                      className="search-input-wrapper location-input"
+                      ref={locationRef}
+                    >
                       <i className="search-icon">
                         <HiMapPin size={20} />
                       </i>
@@ -385,14 +401,14 @@ const Home = () => {
                           readOnly
                           onClick={handleLocationInputClick}
                         />
-                        <button 
+                        <button
                           type="button"
                           className="dropdown-toggle"
                           onClick={() => setShowLocations(!showLocations)}
                         >
                           <HiChevronDown size={16} />
                         </button>
-                        
+
                         {showLocations && (
                           <div className="selection-dropdown-menu">
                             <div className="selection-list-container">
@@ -403,10 +419,16 @@ const Home = () => {
                               {popularLocations.map((location, index) => (
                                 <div
                                   key={index}
-                                  className={`selection-option ${selectedLocation === location ? 'selected' : ''}`}
+                                  className={`selection-option ${
+                                    selectedLocation === location
+                                      ? "selected"
+                                      : ""
+                                  }`}
                                   onClick={() => handleLocationSelect(location)}
                                 >
-                                  <span className="option-text">{location}</span>
+                                  <span className="option-text">
+                                    {location}
+                                  </span>
                                 </div>
                               ))}
                             </div>

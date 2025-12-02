@@ -1,18 +1,18 @@
-// Components/Layout.js
-import { useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import ScrollToTop from "./ScrollToTop";
 
-const Layout = ({ children }) => {
+const Layout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ['/login', '/register'];
-  const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
+  
+  // Hide header only for /auth route
+  const shouldShowHeader = !location.pathname.startsWith('/auth');
 
   return (
     <>
       {shouldShowHeader && <Header />}
       <ScrollToTop />
-      {children}
+      <Outlet /> {/* This renders the child routes */}
     </>
   );
 };

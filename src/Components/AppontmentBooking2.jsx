@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Calendar, MapPin, Star, Building2, Video, Phone, MessageSquare, Home, CreditCard, Lock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Star, Building2, Video, Phone, MessageSquare, Home, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const BookAppointment = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedAppointmentType, setSelectedAppointmentType] = useState('Clinic');
   const [selectedClinic, setSelectedClinic] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date().getDate());
   const [selectedTime, setSelectedTime] = useState('08:00');
   const [selectedPeriod, setSelectedPeriod] = useState('Morning');
+  const [expandedSpecialty, setExpandedSpecialty] = useState(null);
   
   // Calendar state
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -26,12 +28,11 @@ const BookAppointment = () => {
   });
 
   const steps = [
-    { num: 1, label: 'Specialty', active: currentStep >= 1 },
+    { num: 1, label: 'Select Doctor', active: currentStep >= 1 },
     { num: 2, label: 'Appointment Type', active: currentStep >= 2 },
     { num: 3, label: 'Date & Time', active: currentStep >= 3 },
     { num: 4, label: 'Basic Information', active: currentStep >= 4 },
-    { num: 5, label: 'Payment', active: currentStep >= 5 },
-    { num: 6, label: 'Confirmation', active: currentStep >= 6 }
+    { num: 5, label: 'Confirmation', active: currentStep >= 5 }
   ];
 
   const appointmentTypes = [
@@ -40,6 +41,97 @@ const BookAppointment = () => {
     { id: 'audio', label: 'Audio Call', icon: Phone },
     { id: 'chat', label: 'Chat', icon: MessageSquare },
     { id: 'home', label: 'Home Visit', icon: Home }
+  ];
+
+  const specialtiesWithDoctors = [
+    {
+      id: 1,
+      specialty: 'Psychologist',
+      doctors: [
+        {
+          id: 1,
+          name: 'Dr. Michael Brown',
+          rating: 5.0,
+          specialty: 'Psychologist',
+          address: '5th Street - 1011 W 5th St, Suite 120, Austin, TX 78703',
+          image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop'
+        },
+        {
+          id: 2,
+          name: 'Dr. Sarah Johnson',
+          rating: 4.9,
+          specialty: 'Psychologist',
+          address: '2nd Avenue - 456 2nd Ave, Suite 200, Austin, TX 78701',
+          image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop'
+        },
+        {
+          id: 3,
+          name: 'Dr. James Wilson',
+          rating: 4.8,
+          specialty: 'Psychologist',
+          address: '8th Street - 890 8th St, Suite 400, Austin, TX 78705',
+          image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&h=150&fit=crop'
+        }
+      ]
+    },
+    {
+      id: 2,
+      specialty: 'Cardiologist',
+      doctors: [
+        {
+          id: 4,
+          name: 'Dr. Robert Martinez',
+          rating: 4.8,
+          specialty: 'Cardiologist',
+          address: '3rd Street - 789 3rd St, Suite 300, Austin, TX 78702',
+          image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop'
+        },
+        {
+          id: 5,
+          name: 'Dr. Emily Davis',
+          rating: 4.7,
+          specialty: 'Cardiologist',
+          address: '4th Avenue - 321 4th Ave, Suite 150, Austin, TX 78703',
+          image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop'
+        }
+      ]
+    },
+    {
+      id: 3,
+      specialty: 'Dermatologist',
+      doctors: [
+        {
+          id: 6,
+          name: 'Dr. Jennifer Lee',
+          rating: 4.9,
+          specialty: 'Dermatologist',
+          address: '6th Street - 555 6th St, Suite 100, Austin, TX 78704',
+          image: 'https://images.unsplash.com/photo-1614608682850-e0d6ed316d47?w=150&h=150&fit=crop'
+        },
+        {
+          id: 7,
+          name: 'Dr. Amanda Chen',
+          rating: 4.8,
+          specialty: 'Dermatologist',
+          address: '7th Avenue - 222 7th Ave, Suite 250, Austin, TX 78706',
+          image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop'
+        }
+      ]
+    },
+    {
+      id: 4,
+      specialty: 'Pediatrician',
+      doctors: [
+        {
+          id: 8,
+          name: 'Dr. Lisa Anderson',
+          rating: 5.0,
+          specialty: 'Pediatrician',
+          address: '9th Street - 333 9th St, Suite 180, Austin, TX 78707',
+          image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=150&h=150&fit=crop'
+        }
+      ]
+    }
   ];
 
   const clinics = [
@@ -85,7 +177,7 @@ const BookAppointment = () => {
   };
 
   const handleNext = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 6));
+    setCurrentStep(prev => Math.min(prev + 1, 5));
   };
 
   const handleBack = () => {
@@ -153,7 +245,6 @@ const BookAppointment = () => {
         }
 
         .bookApntmt__wrapper {
-          // max-width: 900px;
           margin: 0 auto;
         }
 
@@ -220,8 +311,8 @@ const BookAppointment = () => {
           background: white;
           border-radius: 12px;
           padding: 30px;
-          border: 1px solid #e6e8ee;
-          // box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        //   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border: 1px solid #e6e8ee;
         }
 
         .bookApntmt__doctorHeader {
@@ -238,7 +329,6 @@ const BookAppointment = () => {
           height: 80px;
           border-radius: 50%;
           object-fit: cover;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .bookApntmt__doctorInfo h3 {
@@ -371,6 +461,11 @@ const BookAppointment = () => {
 
         .bookApntmt__btnNext:hover {
           background: #0b5ed7;
+        }
+
+        .bookApntmt__btnNext:disabled {
+          background: #adb5bd;
+          cursor: not-allowed;
         }
 
         .bookApntmt__typeGrid {
@@ -636,126 +731,137 @@ const BookAppointment = () => {
           color: #adb5bd;
         }
 
-        /* Payment Styles */
-        .bookApntmt__paymentSection {
-          margin-bottom: 30px;
-        }
-
-        .bookApntmt__paymentMethods {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 15px;
-          margin-bottom: 30px;
-        }
-
-        .bookApntmt__paymentMethod {
-          padding: 20px;
-          border: 2px solid #e9ecef;
+        /* Doctor Selection Accordion Styles */
+        .bookApntmt__accordionContainer {
+          max-height: 500px;
+          overflow-y: auto;
+          border: 1px solid #e9ecef;
           border-radius: 8px;
-          text-align: center;
+          margin-bottom: 20px;
+        }
+
+        .bookApntmt__accordionContainer::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .bookApntmt__accordionContainer::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 4px;
+        }
+
+        .bookApntmt__accordionContainer::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 4px;
+        }
+
+        .bookApntmt__accordionContainer::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+
+        .bookApntmt__specialtyAccordion {
+          border-bottom: 1px solid #e9ecef;
+        }
+
+        .bookApntmt__specialtyAccordion:last-child {
+          border-bottom: none;
+        }
+
+        .bookApntmt__specialtyHeader {
+          padding: 20px;
+          background: #f8f9fa;
           cursor: pointer;
-          transition: all 0.3s;
-          background: white;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: background 0.3s;
         }
 
-        .bookApntmt__paymentMethod:hover {
-          border-color: #0d6efd;
+        .bookApntmt__specialtyHeader:hover {
+          background: #e9ecef;
         }
 
-        .bookApntmt__paymentMethod.selected {
-          border-color: #0d6efd;
-          background: #f0f7ff;
-        }
-
-        .bookApntmt__paymentIcon {
-          width: 40px;
-          height: 40px;
-          margin: 0 auto 10px;
-          color: #6c757d;
-        }
-
-        .bookApntmt__paymentMethod.selected .bookApntmt__paymentIcon {
-          color: #0d6efd;
-        }
-
-        .bookApntmt__paymentLabel {
-          font-size: 14px;
-          font-weight: 500;
+        .bookApntmt__specialtyTitle {
+          font-size: 16px;
+          font-weight: 600;
           color: #212529;
           margin: 0;
         }
 
-        .bookApntmt__cardForm {
-          background: #f8f9fa;
-          padding: 20px;
-          border-radius: 8px;
-          margin-top: 20px;
+        .bookApntmt__specialtyToggle {
+          transition: transform 0.3s;
+          color: #6c757d;
         }
 
-        .bookApntmt__cardPreview {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border-radius: 12px;
-          padding: 20px;
-          color: white;
-          margin-bottom: 20px;
-          position: relative;
-          height: 180px;
+        .bookApntmt__specialtyToggle.expanded {
+          transform: rotate(90deg);
         }
 
-        .bookApntmt__cardChip {
-          width: 40px;
-          height: 30px;
-          background: #ffd700;
-          border-radius: 5px;
-          margin-bottom: 20px;
+        .bookApntmt__doctorsList {
+          padding: 15px;
+          background: white;
         }
 
-        .bookApntmt__cardNumber {
-          font-size: 18px;
-          letter-spacing: 2px;
-          margin-bottom: 20px;
-          font-family: monospace;
-        }
-
-        .bookApntmt__cardDetails {
-          display: flex;
-          justify-content: space-between;
-          font-size: 14px;
-        }
-
-        .bookApntmt__secureNote {
+        .bookApntmt__doctorCard {
           display: flex;
           align-items: center;
-          justify-content: center;
-          gap: 8px;
-          color: #28a745;
-          font-size: 14px;
-          margin-top: 20px;
-        }
-
-        .bookApntmt__summary {
-          background: #f8f9fa;
-          padding: 20px;
+          gap: 15px;
+          padding: 15px;
+          border: 2px solid #e9ecef;
           border-radius: 8px;
-          margin-bottom: 20px;
-        }
-
-        .bookApntmt__summaryItem {
-          display: flex;
-          justify-content: space-between;
           margin-bottom: 10px;
-          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.3s;
         }
 
-        .bookApntmt__summaryTotal {
-          display: flex;
-          justify-content: space-between;
+        .bookApntmt__doctorCard:last-child {
+          margin-bottom: 0;
+        }
+
+        .bookApntmt__doctorCard:hover {
+          border-color: #0d6efd;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .bookApntmt__doctorCard.selected {
+          border-color: #0d6efd;
+          background: #f0f7ff;
+        }
+
+        .bookApntmt__doctorAvatar {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          object-fit: cover;
+          flex-shrink: 0;
+        }
+
+        .bookApntmt__doctorDetails {
+          flex: 1;
+        }
+
+        .bookApntmt__doctorName {
           font-size: 16px;
           font-weight: 600;
+          color: #212529;
+          margin: 0 0 5px 0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .bookApntmt__doctorSpecialty {
           color: #0d6efd;
-          border-top: 1px solid #dee2e6;
-          padding-top: 10px;
-          margin-top: 10px;
+          font-size: 13px;
+          margin-bottom: 5px;
+        }
+
+        .bookApntmt__doctorAddress {
+          color: #6c757d;
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
         }
 
         @media (max-width: 768px) {
@@ -791,8 +897,8 @@ const BookAppointment = () => {
             margin-left: 0;
           }
 
-          .bookApntmt__paymentMethods {
-            grid-template-columns: 1fr;
+          .bookApntmt__accordionContainer {
+            max-height: 400px;
           }
         }
       `}</style>
@@ -819,23 +925,82 @@ const BookAppointment = () => {
 
         {/* Main Card */}
         <div className="bookApntmt__card">
-          {/* Doctor Header */}
-          <div className="bookApntmt__doctorHeader">
-            <div className="bookApntmt__doctorImage" />
-            <div className="bookApntmt__doctorInfo">
-              <h3>
-                Dr. Michael Brown
-                <span className="bookApntmt__rating">
-                  <Star size={12} fill="white" /> 5.0
-                </span>
-              </h3>
-              <div className="bookApntmt__specialty">Psychologist</div>
-              <div className="bookApntmt__address">
-                <MapPin size={14} />
-                5th Street - 1011 W 5th St, Suite 120, Austin, TX 78703
+          {/* Doctor Header - Only show if doctor is selected */}
+          {selectedDoctor && currentStep > 1 && (
+            <div className="bookApntmt__doctorHeader">
+              <img 
+                src={selectedDoctor.image} 
+                alt={selectedDoctor.name}
+                className="bookApntmt__doctorImage"
+              />
+              <div className="bookApntmt__doctorInfo">
+                <h3>
+                  {selectedDoctor.name}
+                  <span className="bookApntmt__rating">
+                    <Star size={12} fill="white" /> {selectedDoctor.rating}
+                  </span>
+                </h3>
+                <div className="bookApntmt__specialty">{selectedDoctor.specialty}</div>
+                <div className="bookApntmt__address">
+                  <MapPin size={14} />
+                  {selectedDoctor.address}
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Step 1: Select Doctor */}
+          {currentStep === 1 && (
+            <>
+              <h2 className="bookApntmt__sectionTitle">Select a Doctor</h2>
+              <div className="bookApntmt__accordionContainer">
+                {specialtiesWithDoctors.map(specialty => (
+                  <div key={specialty.id} className="bookApntmt__specialtyAccordion">
+                    <div 
+                      className="bookApntmt__specialtyHeader"
+                      onClick={() => setExpandedSpecialty(expandedSpecialty === specialty.id ? null : specialty.id)}
+                    >
+                      <h3 className="bookApntmt__specialtyTitle">{specialty.specialty}</h3>
+                      <ChevronRight 
+                        size={20} 
+                        className={`bookApntmt__specialtyToggle ${expandedSpecialty === specialty.id ? 'expanded' : ''}`}
+                      />
+                    </div>
+                    {expandedSpecialty === specialty.id && (
+                      <div className="bookApntmt__doctorsList">
+                        {specialty.doctors.map(doctor => (
+                          <div
+                            key={doctor.id}
+                            className={`bookApntmt__doctorCard ${selectedDoctor?.id === doctor.id ? 'selected' : ''}`}
+                            onClick={() => setSelectedDoctor(doctor)}
+                          >
+                            <img 
+                              src={doctor.image} 
+                              alt={doctor.name}
+                              className="bookApntmt__doctorAvatar"
+                            />
+                            <div className="bookApntmt__doctorDetails">
+                              <div className="bookApntmt__doctorName">
+                                {doctor.name}
+                                <span className="bookApntmt__rating">
+                                  <Star size={12} fill="white" /> {doctor.rating}
+                                </span>
+                              </div>
+                              <div className="bookApntmt__doctorSpecialty">{doctor.specialty}</div>
+                              <div className="bookApntmt__doctorAddress">
+                                <MapPin size={12} />
+                                {doctor.address}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Step 2: Appointment Type */}
           {currentStep === 2 && (
@@ -1094,118 +1259,30 @@ const BookAppointment = () => {
             </>
           )}
 
-          {/* Step 5: Payment */}
+          {/* Step 5: Confirmation */}
           {currentStep === 5 && (
-            <div className="bookApntmt__paymentSection">
-              <h2 className="bookApntmt__sectionTitle">Select Payment Method</h2>
-              
-              <div className="bookApntmt__paymentMethods">
-                <div className="bookApntmt__paymentMethod selected">
-                  <CreditCard className="bookApntmt__paymentIcon" />
-                  <p className="bookApntmt__paymentLabel">Credit Card</p>
+            <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+              <div style={{ fontSize: '48px', marginBottom: '20px' }}>✓</div>
+              <h2 style={{ color: '#04bd6c', marginBottom: '10px' }}>Appointment Confirmed!</h2>
+              <p style={{ color: '#6c757d', marginBottom: '30px' }}>
+                Your appointment has been successfully booked.
+              </p>
+              <div className="bookApntmt__bookingInfo" style={{ textAlign: 'left' }}>
+                <div className="bookApntmt__infoItem">
+                  <h4>Doctor</h4>
+                  <p>{selectedDoctor?.name}</p>
                 </div>
-                <div className="bookApntmt__paymentMethod">
-                  <Building2 className="bookApntmt__paymentIcon" />
-                  <p className="bookApntmt__paymentLabel">Debit Card</p>
+                <div className="bookApntmt__infoItem">
+                  <h4>Specialty</h4>
+                  <p>{selectedDoctor?.specialty}</p>
                 </div>
-                <div className="bookApntmt__paymentMethod">
-                  <CreditCard className="bookApntmt__paymentIcon" />
-                  <p className="bookApntmt__paymentLabel">PayPal</p>
+                <div className="bookApntmt__infoItem">
+                  <h4>Appointment Type</h4>
+                  <p>{selectedAppointmentType}</p>
                 </div>
-                <div className="bookApntmt__paymentMethod">
-                  <Building2 className="bookApntmt__paymentIcon" />
-                  <p className="bookApntmt__paymentLabel">Google Pay</p>
-                </div>
-              </div>
-
-              <div className="bookApntmt__cardForm">
-                <div className="bookApntmt__cardPreview">
-                  <div className="bookApntmt__cardChip"></div>
-                  <div className="bookApntmt__cardNumber">•••• •••• •••• 1234</div>
-                  <div className="bookApntmt__cardDetails">
-                    <div>JOHN DOE</div>
-                    <div>12/25</div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="bookApntmt__formGroup">
-                      <label className="bookApntmt__label">Card Number</label>
-                      <input
-                        type="text"
-                        className="bookApntmt__input"
-                        placeholder="1234 5678 9012 3456"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="bookApntmt__formGroup">
-                      <label className="bookApntmt__label">Card Holder Name</label>
-                      <input
-                        type="text"
-                        className="bookApntmt__input"
-                        placeholder="John Doe"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-md-4">
-                    <div className="bookApntmt__formGroup">
-                      <label className="bookApntmt__label">Expiry Date</label>
-                      <input
-                        type="text"
-                        className="bookApntmt__input"
-                        placeholder="MM/YY"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="bookApntmt__formGroup">
-                      <label className="bookApntmt__label">CVV</label>
-                      <input
-                        type="text"
-                        className="bookApntmt__input"
-                        placeholder="123"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="bookApntmt__formGroup">
-                      <label className="bookApntmt__label">Zip Code</label>
-                      <input
-                        type="text"
-                        className="bookApntmt__input"
-                        placeholder="12345"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bookApntmt__secureNote">
-                  <Lock size={16} />
-                  Your payment information is secure and encrypted
-                </div>
-              </div>
-
-              <div className="bookApntmt__summary">
-                <div className="bookApntmt__summaryItem">
-                  <span>Consultation Fee</span>
-                  <span>$150.00</span>
-                </div>
-                <div className="bookApntmt__summaryItem">
-                  <span>Service Fee</span>
-                  <span>$15.00</span>
-                </div>
-                <div className="bookApntmt__summaryItem">
-                  <span>Tax</span>
-                  <span>$12.50</span>
-                </div>
-                <div className="bookApntmt__summaryTotal">
-                  <span>Total Amount</span>
-                  <span>$177.50</span>
+                <div className="bookApntmt__infoItem">
+                  <h4>Date & Time</h4>
+                  <p>{selectedDate} {months[currentMonth]}, {currentYear} at {selectedTime}</p>
                 </div>
               </div>
             </div>
@@ -1213,15 +1290,23 @@ const BookAppointment = () => {
 
           {/* Actions */}
           <div className="bookApntmt__actions">
-            <button className="bookApntmt__btn bookApntmt__btnBack" onClick={handleBack}>
-               Back
-            </button>
-            <button className="bookApntmt__btn bookApntmt__btnNext" onClick={handleNext}>
-              {currentStep === 4 ? 'Select Payment' : 
-               currentStep === 3 ? 'Add Basic Information' : 
-               currentStep === 5 ? 'Confirm Appointment' :
-               'Select Date & Time'} 
-            </button>
+            {currentStep > 1 && currentStep < 5 && (
+              <button className="bookApntmt__btn bookApntmt__btnBack" onClick={handleBack}>
+                Back
+              </button>
+            )}
+            {currentStep < 5 && (
+              <button 
+                className="bookApntmt__btn bookApntmt__btnNext" 
+                onClick={handleNext}
+                disabled={currentStep === 1 && !selectedDoctor}
+              >
+                {currentStep === 1 ? 'Select Appointment Type' :
+                 currentStep === 2 ? 'Select Date & Time' :
+                 currentStep === 3 ? 'Add Basic Information' : 
+                 'Confirm Appointment'} 
+              </button>
+            )}
           </div>
         </div>
       </div>

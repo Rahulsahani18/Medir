@@ -4,7 +4,6 @@ import React, { useRef } from 'react';
 import {
   FaStar,
   FaCalendarCheck,
-
   FaHeartbeat,
 } from "react-icons/fa";
 import {
@@ -20,66 +19,30 @@ import {
   FaHospital,
   FaChevronLeft,
   FaChevronRight,
+  FaStethoscope,
+  FaAmbulance,
+  FaUserNurse
 } from "react-icons/fa";
 import DOH from "../assets/DOH.png";
 import ESIC from "../assets/ESIC.png";
 import MRU from "../assets/MRU.png";
 import { Link } from "react-router-dom";
-const DoctorCard = ({ doctor }) => {
-  return (
-    <div className="col-lg-3 col-md-6 mb-4">
-      <div className="doctor-card">
-        <div className="doctor-image-wrapper">
-          <img src={doctor.image} alt={doctor.name} className="doctor-image" />
-          <div className="rating-badge">
-            <span className="star">★</span> {doctor.rating}
-          </div>
-          <button className="favorite-btn">
-            <Heart size={18} />
-          </button>
-        </div>
 
-        <div className="doctor-info">
-          <div className="specialty-status">
-            <span className="specialty">{doctor.specialty}</span>
-            <span className="status-available">● Available</span>
-          </div>
-
-          <h5 className="doctor-name">{doctor.name}</h5>
-
-          <div className="doctor-details">
-            <MapPin size={14} className="icon" />
-            <span>{doctor.location}</span>
-          </div>
-
-          <div className="doctor-footer">
-            <div>
-              <p className="consultation-label">Consultation Fees</p>
-              <p className="consultation-fee">${doctor.fee}</p>
-            </div>
-            <button className="btn-book ">Book Now</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const OurPartners = () => {
-
   const trackRef2 = useRef(null);
+  const companies = [DOH, MRU, ESIC];
 
-    const companies = [DOH, MRU, ESIC];
-
+  // Updated services array - 3 on left, different ones on right
   const services = [
-    { icon: <FaCalendarCheck />, title: "Book Appointment",  url:"booking",  color: "#822bd4" },
-    { icon: <FaCommentMedical />, title: "Talk to Doctors", url:"all-doctors", color: "#0e82fd" },
-    { icon: <FaHospital />, title: "Hospitals & Clinics", color: "#dd2590" },
-    { icon: <FaHeartbeat />, title: "Healthcare", color: "#06aed4" },
-    { icon: <FaPills />, title: "Medicine & Supplies", color: "#6938ef" },
-    { icon: <FaFlask />, title: "Lab Testing", color: "#e04f16" },
-    { icon: <FaHome />, title: "Home Care", color: "#0e9384" },
+    // Left side - 3 services
+    { icon: <FaCalendarCheck />, title: "Book Appointment", url: "book-appointment", color: "#822bd4" },
+    { icon: <FaCommentMedical />, title: "Talk to Doctors", url: "all-doctors", color: "#0e82fd" },
+    { icon: <FaHospital />, title: "About Us", url: "about", color: "#dd2590" },
+    { icon: <FaStethoscope />, title: "Healthcare", url: "healthcare", color: "#06aed4" },
+
   ];
+
   const servicesRow2 = [
     { id: 1, name: "Health Care Services", icon: <FaHospital size={24} /> },
     { id: 2, name: "Talk to Doctors", icon: <FaUserMd size={24} /> },
@@ -142,10 +105,6 @@ const OurPartners = () => {
     },
   ];
 
-  const handleViewAll = () => {
-    console.log("Redirecting to all doctors page...");
-  };
-
   return (
     <div className="featured-doctors-section">
       <div className="services-overlay-box">
@@ -165,54 +124,47 @@ const OurPartners = () => {
       </div>
 
       <div className="container-fluid">
-        {/* Dots Pattern Overlay */}
-                {/* Services Navigation Section */}
-      <div className="topSpecialities__servicesSection">
-        <div className="topSpecialities__servicesMarquee">
-          <div 
-            ref={trackRef2}
-            className="topSpecialities__servicesTrack"
-          >
-            {[...servicesRow2, ...servicesRow2, ...servicesRow2].map((service, index) => (
-              <div
-                key={`${service.id}-${index}`}
-                className="topSpecialities__serviceItem"
-              >
-                <span className="topSpecialities__serviceIcon">{service.icon}</span>
-                <span className="topSpecialities__serviceName">{service.name}</span>
-              </div>
-            ))}
-          </div>
-
-      </div>
-
-        </div>
-      </div>
-
-      <div className="container">
-        <div className="section-header">
-          <div className="featured-badge">✦  Our Knowledge Partners for Cancer Care ✦</div>
-          {/* <h2 className="section-title">Our Highlighted Doctors</h2> */}
-        </div>
-
-         <div className="tstmnls-companies">
-        <div className="container">
-          <div className="text-center">
-            {/* <p className="tstmnls-companies-title">
-             
-            </p> */}
-            <div className="tstmnls-companies-grid">
-              {companies.map((company, index) => (
-                <img
-                  key={index}
-                  src={company}
-                  className="tstmnls-company-logo"
-                />
+        {/* Services Navigation Section */}
+        <div className="topSpecialities__servicesSection">
+          <div className="topSpecialities__servicesMarquee">
+            <div 
+              ref={trackRef2}
+              className="topSpecialities__servicesTrack"
+            >
+              {[...servicesRow2, ...servicesRow2, ...servicesRow2].map((service, index) => (
+                <div
+                  key={`${service.id}-${index}`}
+                  className="topSpecialities__serviceItem"
+                >
+                  <span className="topSpecialities__serviceIcon">{service.icon}</span>
+                  <span className="topSpecialities__serviceName">{service.name}</span>
+                </div>
               ))}
             </div>
           </div>
         </div>
       </div>
+
+      <div className="container">
+        <div className="section-header">
+          <div className="featured-badge">✦ Our Knowledge Partners for Cancer Care ✦</div>
+        </div>
+
+        <div className="tstmnls-companies">
+          <div className="container">
+            <div className="text-center">
+              <div className="tstmnls-companies-grid">
+                {companies.map((company, index) => (
+                  <img
+                    key={index}
+                    src={company}
+                    className="tstmnls-company-logo"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
