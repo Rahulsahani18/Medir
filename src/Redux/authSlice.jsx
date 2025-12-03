@@ -1,15 +1,12 @@
-// Redux/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../utils/axiosInstance';
+import { api } from '../utils/api'; // Import the simple API utility
 
 // Async thunks for API calls
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      // For development: /api/signup -> proxy rewrites to /doctor/doctor/api/signup
-      // For production: https://oswal.omsoftsolution.in/doctor/doctor/api/signup
-      const response = await axiosInstance.post('/signup', {
+      const response = await api.post('/signup', {
         first_name: userData.firstname,
         last_name: userData.lastname,
         email: userData.email,
@@ -18,10 +15,10 @@ export const registerUser = createAsyncThunk(
         confirm_password: userData.confirmPassword
       });
       
-      console.log("Register Response:", response.data);
+      console.log("Register Response:", response);
       
       // Store user info (register doesn't return tokens)
-      if (response.data.status === true) {
+      if (response.status === true) {
         localStorage.setItem('user', JSON.stringify({
           firstname: userData.firstname,
           lastname: userData.lastname,
@@ -30,13 +27,10 @@ export const registerUser = createAsyncThunk(
         }));
       }
       
-      return response.data;
+      return response;
       
     } catch (error) {
       console.error("Register Error:", error);
-      if (error.response?.data) {
-        return rejectWithValue(error.response.data);
-      }
       return rejectWithValue({ 
         status: false, 
         message: error.message || 'Registration failed' 
@@ -49,29 +43,26 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async (loginData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/login', {
+      const response = await api.post('/login', {
         email: loginData.email,
         password: loginData.password
       });
       
-      console.log("Login Response:", response.data);
+      console.log("Login Response:", response);
       
       // Store tokens in localStorage
-      if (response.data.status === true && response.data.access_token) {
-        localStorage.setItem('access_token', response.data.access_token);
-        localStorage.setItem('refresh_token', response.data.refresh_token || '');
+      if (response.status === true && response.access_token) {
+        localStorage.setItem('access_token', response.access_token);
+        localStorage.setItem('refresh_token', response.refresh_token || '');
         localStorage.setItem('user', JSON.stringify({ 
           email: loginData.email 
         }));
       }
       
-      return response.data;
+      return response;
       
     } catch (error) {
       console.error("Login Error:", error);
-      if (error.response?.data) {
-        return rejectWithValue(error.response.data);
-      }
       return rejectWithValue({ 
         status: false, 
         message: error.message || 'Login failed' 
@@ -79,8 +70,6 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
-
-// ... rest of your authSlice code remains the same
 
 // Get initial state from localStorage
 const getInitialState = () => {
@@ -130,21 +119,15 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        
-        // For register, we store user info but DON'T set isAuthenticated
-        // because register doesn't return tokens
         if (action.payload.status === true) {
-          // Store user info (for auto-fill on login)
           state.user = {
             firstname: action.meta.arg.firstname,
             lastname: action.meta.arg.lastname,
             email: action.meta.arg.email,
             phone: action.meta.arg.phone
           };
-          // Keep isAuthenticated as false (user needs to login)
-          state.isAuthenticated = false;
+          state.isAuthenticated = false; // User needs to login
         }
-        
         state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
@@ -160,14 +143,12 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         
-        // For login, set isAuthenticated only if we have access_token
         if (action.payload.status === true && action.payload.access_token) {
           state.isAuthenticated = true;
           state.user = { email: action.meta.arg.email };
           state.access_token = action.payload.access_token;
           state.refresh_token = action.payload.refresh_token;
         } else if (action.payload.status === true && !action.payload.access_token) {
-          // Login successful but no token (shouldn't happen)
           state.isAuthenticated = false;
           state.error = { 
             status: false, 

@@ -1,20 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-
-
+import { api } from '../utils/api'; // Import the simple API utility
 
 // Async thunk for fetching doctors
 export const fetchDoctors = createAsyncThunk(
   'doctors/fetchDoctors',
   async (_, { rejectWithValue }) => {
     try {
-      // const response = await axios.get('https://oswal.omsoftsolution.in/doctor/doctor/api/doctors');
-      const response = await axios.get('/api/doctors');
+      // Simple API call using our utility
+      const response = await api.get('/doctors');
       
-      return response.data;
+      // The api.get() already parses JSON, so response is the data object
+      return response;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({ 
+        message: error.message || 'Failed to fetch doctors' 
+      });
     }
   }
 );
@@ -44,7 +44,7 @@ const doctorSlice = createSlice({
       })
       .addCase(fetchDoctors.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to fetch doctors';
+        state.error = action.payload;
         state.doctors = [];
       });
   },
