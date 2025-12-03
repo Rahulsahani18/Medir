@@ -21,7 +21,6 @@ import { fetchDoctors } from "./Redux/doctorSlice";
 import UserProfile from "./User/UserProfile";
 import About from "./Hospital/About";
 import NotFoundPage from "./Components/NotFoundPage";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ToastHandler from "./Components/ToastHandler";
 import AuthGuard from "./Components/AuthGuard";
@@ -42,7 +41,6 @@ const AppInitializer = ({ children }) => {
 const AppContent = () => {
   return (
     <Router>
-      <ToastContainer />
       <ToastHandler />
       <ScrollToTop />
       <Routes>

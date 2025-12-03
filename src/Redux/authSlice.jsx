@@ -1,13 +1,15 @@
 // Redux/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 
 // Async thunks for API calls
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("/api/signup", {
+      // For development: /api/signup -> proxy rewrites to /doctor/doctor/api/signup
+      // For production: https://oswal.omsoftsolution.in/doctor/doctor/api/signup
+      const response = await axiosInstance.post('/signup', {
         first_name: userData.firstname,
         last_name: userData.lastname,
         email: userData.email,
@@ -16,10 +18,10 @@ export const registerUser = createAsyncThunk(
         confirm_password: userData.confirmPassword
       });
       
-      // Store tokens in localStorage if exists
-      if (response.data.access_token) {
-        localStorage.setItem('access_token', response.data.access_token);
-        localStorage.setItem('refresh_token', response.data.refresh_token || '');
+      console.log("Register Response:", response.data);
+      
+      // Store user info (register doesn't return tokens)
+      if (response.data.status === true) {
         localStorage.setItem('user', JSON.stringify({
           firstname: userData.firstname,
           lastname: userData.lastname,
@@ -29,8 +31,16 @@ export const registerUser = createAsyncThunk(
       }
       
       return response.data;
+      
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      console.error("Register Error:", error);
+      if (error.response?.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue({ 
+        status: false, 
+        message: error.message || 'Registration failed' 
+      });
     }
   }
 );
@@ -39,13 +49,15 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async (loginData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/login', {
+      const response = await axiosInstance.post('/login', {
         email: loginData.email,
         password: loginData.password
       });
       
+      console.log("Login Response:", response.data);
+      
       // Store tokens in localStorage
-      if (response.data.access_token) {
+      if (response.data.status === true && response.data.access_token) {
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token || '');
         localStorage.setItem('user', JSON.stringify({ 
@@ -54,39 +66,21 @@ export const loginUser = createAsyncThunk(
       }
       
       return response.data;
+      
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      console.error("Login Error:", error);
+      if (error.response?.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue({ 
+        status: false, 
+        message: error.message || 'Login failed' 
+      });
     }
   }
 );
 
-// Refresh token function
-export const refreshToken = createAsyncThunk(
-  'auth/refreshToken',
-  async (_, { rejectWithValue }) => {
-    try {
-      const refresh_token = localStorage.getItem('refresh_token');
-      
-      if (!refresh_token) {
-        throw new Error('No refresh token available');
-      }
-      
-      const response = await axios.post(`${API_BASE_URL}/refresh-token`, {
-        refresh_token: refresh_token
-      });
-      
-      // Update tokens in localStorage
-      if (response.data.access_token) {
-        localStorage.setItem('access_token', response.data.access_token);
-        localStorage.setItem('refresh_token', response.data.refresh_token || refresh_token);
-      }
-      
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
-    }
-  }
-);
+// ... rest of your authSlice code remains the same
 
 // Get initial state from localStorage
 const getInitialState = () => {
@@ -109,12 +103,10 @@ const authSlice = createSlice({
   initialState: getInitialState(),
   reducers: {
     logout: (state) => {
-      // Clear all tokens from localStorage
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
       
-      // Clear Redux state
       state.user = null;
       state.access_token = null;
       state.refresh_token = null;
@@ -138,20 +130,26 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
-        state.user = {
-          firstname: action.meta.arg.firstname,
-          lastname: action.meta.arg.lastname,
-          email: action.meta.arg.email,
-          phone: action.meta.arg.phone
-        };
-        state.access_token = action.payload.access_token;
-        state.refresh_token = action.payload.refresh_token;
+        
+        // For register, we store user info but DON'T set isAuthenticated
+        // because register doesn't return tokens
+        if (action.payload.status === true) {
+          // Store user info (for auto-fill on login)
+          state.user = {
+            firstname: action.meta.arg.firstname,
+            lastname: action.meta.arg.lastname,
+            email: action.meta.arg.email,
+            phone: action.meta.arg.phone
+          };
+          // Keep isAuthenticated as false (user needs to login)
+          state.isAuthenticated = false;
+        }
+        
         state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Registration failed';
+        state.error = action.payload;
       })
       
       // Login cases
@@ -161,30 +159,27 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
-        state.user = { email: action.meta.arg.email };
-        state.access_token = action.payload.access_token;
-        state.refresh_token = action.payload.refresh_token;
+        
+        // For login, set isAuthenticated only if we have access_token
+        if (action.payload.status === true && action.payload.access_token) {
+          state.isAuthenticated = true;
+          state.user = { email: action.meta.arg.email };
+          state.access_token = action.payload.access_token;
+          state.refresh_token = action.payload.refresh_token;
+        } else if (action.payload.status === true && !action.payload.access_token) {
+          // Login successful but no token (shouldn't happen)
+          state.isAuthenticated = false;
+          state.error = { 
+            status: false, 
+            message: 'Login successful but no access token received' 
+          };
+        }
+        
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Login failed';
-      })
-      
-      // Refresh token cases
-      .addCase(refreshToken.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(refreshToken.fulfilled, (state, action) => {
-        state.loading = false;
-        state.access_token = action.payload.access_token;
-        state.refresh_token = action.payload.refresh_token || state.refresh_token;
-      })
-      .addCase(refreshToken.rejected, (state) => {
-        state.loading = false;
-        // Don't logout immediately on refresh failure
-        // Let the actual API call fail with 401
+        state.error = action.payload;
       });
   }
 });

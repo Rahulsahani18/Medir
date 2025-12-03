@@ -466,7 +466,7 @@ const DoctorProfile = () => {
                     )}
                   </button>
                   <button 
-                    className={`btn-consult-online ${!doctorData.nextAvailable ? 'disabled' : ''}`}
+                    className={`btn-consult-online ${!doctorData.availableToday ? 'disabled' : ''}`}
                     disabled={!doctorData.availableToday}
                   >
                     <Phone size={16} className="me-2" />
@@ -477,10 +477,10 @@ const DoctorProfile = () => {
                   </button>
 
                   {/* Tooltip */}
-                  {showTooltip && !doctorData.nextAvailable && (
+                  {showTooltip && !doctorData.availableToday && (
                     <div className="availability-tooltip">
                       <XCircle size={16} />
-                      <span>Doctor is not available today. Next available: {doctorData.nextAvailable}</span>
+                      <span className="">Doctor is not available today. Next available: {doctorData.nextAvailable}</span>
                     </div>
                   )}
                 </div>

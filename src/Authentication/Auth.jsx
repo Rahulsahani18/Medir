@@ -1,5 +1,5 @@
 // Authentication/Auth.jsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -16,13 +16,11 @@ export default function Auth() {
   const queryParams = new URLSearchParams(location.search);
   const initialMode = queryParams.get('mode') === 'register' ? false : true;
   
-  const { loading, isAuthenticated } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.auth);
   
   const [isLogin, setIsLogin] = useState(initialMode);
   const [showPassword, setShowPassword] = useState(false);
 
-  
-  
   // Login state and errors
   const [loginData, setLoginData] = useState({
     email: "",
@@ -62,32 +60,10 @@ export default function Auth() {
   const nameRegex = /^[A-Za-z\s]+$/;
 
   // Update URL when mode changes
-  useEffect(() => {
+  const updateUrlMode = () => {
     const newMode = isLogin ? 'login' : 'register';
     navigate(`/auth?mode=${newMode}`, { replace: true });
-  }, [isLogin, navigate]);
-
-  // Update mode when URL changes
-  useEffect(() => {
-    const mode = queryParams.get('mode');
-    if (mode === 'register') {
-      setIsLogin(false);
-    } else {
-      setIsLogin(true);
-    }
-  }, [location.search]);
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
-    }
-  }, [isAuthenticated, navigate]);
-
-  // Clear error when switching modes
-  useEffect(() => {
-    dispatch(clearError());
-  }, [isLogin, dispatch]);
+  };
 
   // Validate login form
   const validateLoginForm = () => {
@@ -205,78 +181,92 @@ export default function Auth() {
     }
   };
 
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (validateLoginForm()) {
-      try {
-        const result = await dispatch(loginUser({
-          email: loginData.email,
-          password: loginData.password
-        })).unwrap();
+// In your Auth.jsx submit handlers:
+
+const handleLoginSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (validateLoginForm()) {
+    try {
+      const result = await dispatch(loginUser({
+        email: loginData.email,
+        password: loginData.password
+      })).unwrap();
+      
+      console.log("Login Result", result);
+      
+      // Show message from backend
+      if (result.status === true && result.message) {
+        toast.success(result.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
         
-        // Show success message from backend
-        if (result.message) {
-          toast.success(result.message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-        } else {
-          toast.success("Login successful!", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-        }
-        
-        // Reset form on success
+        // Reset form
         setLoginData({ email: "", password: "", rememberMe: false });
         setLoginErrors({ email: "", password: "" });
         
-        // Redirect will happen automatically via useEffect
-      } catch (error) {
-        // Error is already shown by ToastHandler from Redux state
-        console.error("Login failed:", error);
-      }
-    }
-  };
-
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (validateRegisterForm()) {
-      try {
-        const result = await dispatch(registerUser(registerData)).unwrap();
-        
-        // Show success message from backend
-        if (result.message) {
-          toast.success(result.message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-        } else {
-          toast.success("Registration successful!", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
+        // Only navigate if we have access_token (user is authenticated)
+        if (result.access_token) {
+          setTimeout(() => {
+            navigate('/');
+          }, 1500);
         }
         
-        // Reset form on success
+      } else if (result.status === false && result.message) {
+        // Show error message from backend
+        toast.error(result.message, {
+          position: "top-right",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+      
+    } catch (error) {
+      console.error("Login failed:", error);
+      // Check if error has status and message
+      // if (error.status === false && error.message) {
+      //   toast.error(error.message, {
+      //     position: "top-right",
+      //     autoClose: 2500,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //   });
+      // } 
+    }
+  }
+};
+
+const handleRegisterSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (validateRegisterForm()) {
+    try {
+      const result = await dispatch(registerUser(registerData)).unwrap();
+      
+      console.log("Register Result", result);
+      
+      // Show message from backend
+      if (result.status === true && result.message) {
+        toast.success(result.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        
+        // Reset form
         setRegisterData({
           firstname: "",
           lastname: "",
@@ -296,13 +286,39 @@ export default function Auth() {
         });
         
         // Auto-switch to login after successful registration
-        setIsLogin(true);
-      } catch (error) {
-        // Error is already shown by ToastHandler from Redux state
-        console.error("Registration failed:", error);
+        setTimeout(() => {
+          setIsLogin(true);
+        }, 1500);
+        
+      } else if (result.status === false && result.message) {
+        // Show error message from backend
+        toast.error(result.message, {
+          position: "top-right",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
+      
+    } catch (error) {
+      console.error("Registration failed:", error);
+      // Check if error has status and message
+      // if (error.status === false && error.message) {
+      //   toast.error(error.message, {
+      //     position: "top-right",
+      //     autoClose: 2500,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //   });
+      // }
     }
-  };
+  }
+};
+
 
   // Clear specific error on focus
   const handleInputFocus = (field, isLoginForm) => {
@@ -333,6 +349,8 @@ export default function Auth() {
     });
     // Clear Redux error
     dispatch(clearError());
+    // Update URL
+    updateUrlMode();
   };
 
   return (
@@ -413,7 +431,7 @@ export default function Auth() {
                     <label htmlFor="rememberMe">Remember Me</label>
                   </div>
                   <div className="right-links">
-                    <a 
+                    <a
                       type="button" 
                       className="forgot-password"
                       onClick={() => alert("Forgot password functionality")}
@@ -550,7 +568,7 @@ export default function Auth() {
                   <div className="password-wrapper">
                     <input
                       type={showPassword ? "text" : "password"}
-                      className={`form-control ${registerErrors.confirmPassword ? 'is-invalid' : ''}`}
+                      className={`form-control ${registerErrors.confresh_token ? 'is-invalid' : ''}`}
                       value={registerData.confirmPassword}
                       onChange={(e) => handleRegisterChange('confirmPassword', e.target.value)}
                       onFocus={() => handleInputFocus('confirmPassword', false)}
@@ -571,7 +589,7 @@ export default function Auth() {
                 >
                   {loading ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      <span className="spinner-border spinner-border-sm me-2 " role="status" aria-hidden="true"></span>
                       Creating Account...
                     </>
                   ) : (
@@ -582,7 +600,7 @@ export default function Auth() {
             </form>
           )}
 
-          <div className={`${isLogin ? 'signup-link' : 'signin-link'}`}>
+          <div className={`${isLogin ? 'signup-link' : 'signin-link'} `}>
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button 
               onClick={toggleAuthMode}

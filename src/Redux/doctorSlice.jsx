@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+
+
+
 // Async thunk for fetching doctors
 export const fetchDoctors = createAsyncThunk(
   'doctors/fetchDoctors',
