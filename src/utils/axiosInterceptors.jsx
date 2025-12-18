@@ -15,24 +15,29 @@ const apiClient = axios.create({
   timeout: 30000,
 });
 
-// Use default Content-Type for POST/PUT/PATCH
-// If your backend expects form-data, keep 'application/x-www-form-urlencoded'
-// If your backend expects JSON, use 'application/json'
-apiClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-apiClient.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
-apiClient.defaults.headers.patch['Content-Type'] = 'application/x-www-form-urlencoded';
-
-// Request interceptor: Attach token in Authorization header
-// This is the standard way that your backend expects
+// ✅ SMART INTERCEPTOR: Use header for same-origin, query param for cross-origin
 apiClient.interceptors.request.use(
   (config) => {
     if (storeRef) {
       const state = storeRef.getState();
       const token = state.auth?.access_token;
 
-      // IMPORTANT: Only add Authorization header if token exists
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+      if (token) {
+        // Check if we're making a cross-origin request
+        const isCrossOrigin = window.location.origin !== new URL(BASE_URL).origin;
+        
+        if (!isCrossOrigin || config.url === '/login' || config.url === '/signup') {
+          // Same-origin or auth endpoints: Use Authorization header
+          config.headers.Authorization = `Bearer ${token}`;
+          console.log(`✅ Using Authorization header for ${config.url}`);
+        } else {
+          // Cross-origin: Use query parameter
+          config.params = {
+            ...config.params,
+            access_token: token
+          };
+          console.log(`🌐 Using query param for cross-origin: ${config.url}`);
+        }
       }
     }
     return config;
@@ -40,29 +45,34 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// ✅ Response interceptor - Fix 401 handling
 apiClient.interceptors.response.use(
   (response) => {
     // ✅ Return only the data for successful responses
-    return response;
+    return response.data;
   },
   (error) => {
-    // Only handle 401 if we have a store reference
-    if (error.response?.status === 401 && storeRef) {
+    // Don't auto-logout if it's a login request
+    const isAuthRequest = error.config?.url?.includes('/login') || 
+                         error.config?.url?.includes('/signup');
+    
+    if (error.response?.status === 401 && !isAuthRequest && storeRef) {
       const originalRequest = error.config;
       
-      // Prevent infinite retry loops
       if (!originalRequest._retry) {
         originalRequest._retry = true;
+        
+        console.log("🔐 401 Detected - Logging out user");
         
         toast.error("Your session has expired. Please login again.", {
           position: "top-right",
           autoClose: 2500,
         });
 
-        // Dispatch logout to clear tokens from Redux state
+        // Clear the auth state
         storeRef.dispatch(logout());
-
+        
+        // Delay redirect to show toast
         setTimeout(() => {
           if (window.location.pathname !== "/auth") {
             window.location.href = "/auth";
@@ -71,7 +81,7 @@ apiClient.interceptors.response.use(
       }
     }
     
-    // Return the error data for the thunk to handle
+    // Return error data for the thunk to handle
     return Promise.reject(error.response?.data || error);
   }
 );
