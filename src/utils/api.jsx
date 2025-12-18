@@ -1,7 +1,7 @@
 // Simple API utility - works everywhere
 const API_BASE_URL = window.location.hostname === 'localhost' 
   ? '/api'  // Local development
-  : 'https://oswal.omsoftsolution.in/doctor/doctor/api';  // Everything else
+  : 'https://oswal.omsoftsolution.in/doctor/doctor/api'; 
 
 export const api = {
   async get(endpoint) {

@@ -1,0 +1,895 @@
+.bookApntmt__container {
+          min-height: 100vh;
+          background: #f8f9fa;
+          padding: 40px 20px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .bookApntmt__wrapper {
+          margin: 0 auto;
+        }
+          .bookApntmt__wrapper.container{
+          max-width:80%;
+          }
+
+        .bookApntmt__stepper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 40px;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .bookApntmt__step {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .bookApntmt__stepNumber {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 14px;
+          transition: all 0.3s;
+        }
+
+        .bookApntmt__stepNumber.active {
+          background: #04bd6c;
+          color: white;
+        }
+
+        .bookApntmt__stepNumber.inactive {
+          background: #e9ecef;
+          color: #6c757d;
+        }
+
+        .bookApntmt__stepLabel {
+          font-size: 14px;
+          font-weight: 500;
+          color: #495057;
+        }
+
+        .bookApntmt__stepLabel.active {
+          color: #04bd6c;
+        }
+
+        .bookApntmt__stepDivider {
+          width: 40px;
+          height: 2px;
+          background: #dee2e6;
+          margin: 0 5px;
+          transition: all 0.3s;
+        }
+
+        .bookApntmt__stepDivider.active {
+          background: #04bd6c;
+        }
+
+        .bookApntmt__card {
+          background: white;
+          border-radius: 12px;
+          padding: 30px;
+          border: 1px solid #e6e8ee;
+        }
+
+        .bookApntmt__doctorHeader {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid #e9ecef;
+          margin-bottom: 30px;
+        }
+
+        .bookApntmt__doctorImage {
+          width: 85px;
+          height: 85px;
+        }
+
+        .bookApntmt__doctorInfo h3 {
+          margin: 0 0 5px 0;
+          font-size: 22px;
+          font-weight: 600;
+          color: #212529;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .bookApntmt__rating {
+          background: #ff6b35;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+        }
+
+        .bookApntmt__specialty {
+          color: #0d6efd;
+          font-size: 14px;
+          margin-bottom: 5px;
+        }
+
+        .bookApntmt__address {
+          color: #6c757d;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .bookApntmt__bookingInfo {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+          background: #f8f9fa;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 30px;
+        }
+
+        .bookApntmt__infoItem h4 {
+          font-size: 12px;
+          color: #6c757d;
+          margin: 0 0 5px 0;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+
+        .bookApntmt__infoItem p {
+          margin: 0;
+          font-size: 14px;
+          color: #212529;
+          font-weight: 500;
+        }
+
+        .bookApntmt__formGroup {
+          margin-bottom: 20px;
+        }
+
+        .bookApntmt__label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 500;
+          color: #212529;
+          font-size: 14px;
+        }
+
+        .bookApntmt__input {
+          width: 100%;
+          padding: 10px 15px;
+          border: 1px solid #ced4da;
+          border-radius: 6px;
+          font-size: 14px;
+          transition: border-color 0.3s;
+        }
+
+        .bookApntmt__input:focus {
+          outline: none;
+          border-color: #0d6efd;
+          box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .bookApntmt__textarea {
+          min-height: 100px;
+          resize: vertical;
+        }
+
+        .bookApntmt__actions {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 30px;
+          gap: 15px;
+        }
+
+        .bookApntmt__btn {
+          padding: 12px 30px;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 14px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .bookApntmt__btnBack {
+          background: #1e293b;
+          color: white;
+        }
+
+        .bookApntmt__btnBack:hover {
+          background: #0f172a;
+        }
+
+        .bookApntmt__btnNext {
+          background: #41c0d6;
+          color: white;
+          margin-left: auto;
+        }
+
+        .bookApntmt__btnNext:hover {
+          background: #0b5ed7;
+        }
+
+        .bookApntmt__typeGrid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+          gap: 15px;
+          margin-bottom: 30px;
+        }
+
+        .bookApntmt__typeCard {
+          padding: 20px;
+          border: 2px solid #e9ecef;
+          border-radius: 8px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+          background: white;
+        }
+
+        .bookApntmt__typeCard:hover {
+          border-color: #0d6efd;
+          transform: translateY(-2px);
+        }
+
+        .bookApntmt__typeCard.selected {
+          border-color: #0d6efd;
+          background: #f0f7ff;
+        }
+
+        .bookApntmt__typeIcon {
+          width: 50px;
+          height: 50px;
+          margin: 0 auto 10px;
+          color: #6c757d;
+        }
+
+        .bookApntmt__typeCard.selected .bookApntmt__typeIcon {
+          color: #0d6efd;
+        }
+
+        .bookApntmt__typeLabel {
+          font-size: 18px;
+          font-weight: 600;
+          color: #212529;
+          margin: 0;
+        }
+
+        .bookApntmt__sectionTitle {
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 20px;
+          color: #212529;
+        }
+
+        .bookApntmt__clinicCard {
+          padding: 20px;
+          border: 2px solid #e9ecef;
+          border-radius: 8px;
+          margin-bottom: 15px;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .bookApntmt__clinicCard:hover {
+          border-color: #0d6efd;
+        }
+
+        .bookApntmt__clinicCard.selected {
+          border-color: #0d6efd;
+          background: #f0f7ff;
+        }
+
+        .bookApntmt__clinicIcon {
+          width: 50px;
+          height: 50px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .bookApntmt__clinicInfo {
+          flex: 1;
+        }
+
+        .bookApntmt__clinicName {
+          font-weight: 600;
+          font-size: 16px;
+          color: #212529;
+          margin: 0 0 5px 0;
+        }
+
+        .bookApntmt__clinicAddress {
+          font-size: 13px;
+          color: #6c757d;
+          margin: 0;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .bookApntmt__clinicDistance {
+          color: #0d6efd;
+          font-weight: 600;
+          font-size: 13px;
+        }
+
+        .bookApntmt__calendar {
+          display: flex;
+          gap: 35px;
+          margin-bottom: 30px;
+        }
+
+        .bookApntmt__calendarLeft {
+          flex: 1;
+        }
+
+        .bookApntmt__calendarHeader {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 20px;
+        }
+
+        .bookApntmt__calendarNav {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .bookApntmt__navBtn {
+          width: 32px;
+          height: 32px;
+          border: 1px solid #ced4da;
+          border-radius: 6px;
+          background: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        .bookApntmt__navBtn:hover {
+          border-color: #0d6efd;
+          color: #0d6efd;
+        }
+
+        .bookApntmt__currentMonth {
+          font-size: 16px;
+          font-weight: 600;
+          color: #212529;
+        }
+
+        .bookApntmt__calendarSelects {
+          display: flex;
+          gap: 10px;
+        }
+
+        .bookApntmt__select {
+          padding: 8px 12px;
+          border: 1px solid #ced4da;
+          border-radius: 6px;
+          font-size: 14px;
+          background: white;
+          cursor: pointer;
+        }
+
+        .bookApntmt__calendarGrid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 5px;
+        }
+
+        .bookApntmt__calendarDay {
+          text-align: center;
+          padding: 10px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #6c757d;
+        }
+
+        .bookApntmt__calendarDate {
+          text-align: center;
+          padding: 10px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s;
+          border: none;
+          background: white;
+        }
+
+        .bookApntmt__calendarDate:hover:not(.disabled):not(.past) {
+          background: #e9ecef;
+        }
+
+        .bookApntmt__calendarDate.selected {
+          background: #0d6efd;
+          color: white;
+        }
+
+        .bookApntmt__calendarDate.disabled {
+          color: #dee2e6;
+          cursor: not-allowed;
+        }
+
+        .bookApntmt__calendarDate.past {
+          color: #adb5bd;
+          cursor: not-allowed;
+          background: #f8f9fa;
+        }
+
+        .bookApntmt__timeSlotsRight {
+          flex: 1;
+        }
+
+        .bookApntmt__periodSection {
+          margin-bottom: 20px;
+        }
+
+        .bookApntmt__periodTitle {
+          font-size: 14px;
+          font-weight: 600;
+          color: #212529;
+          margin-bottom: 10px;
+        }
+
+        .bookApntmt__timeGrid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+          gap: 10px;
+        }
+
+        .bookApntmt__timeSlot {
+          padding: 8px 12px;
+          border: 1px solid #ced4da;
+          border-radius: 6px;
+          text-align: center;
+          cursor: pointer;
+          font-size: 13px;
+          transition: all 0.3s;
+          background: white;
+        }
+
+        .bookApntmt__timeSlot:hover {
+          border-color: #0d6efd;
+        }
+
+        .bookApntmt__timeSlot.selected {
+          background: #0d6efd;
+          color: white;
+          border-color: #0d6efd;
+        }
+
+        .bookApntmt__timeSlot.disabled {
+          background: #e9ecef;
+          cursor: not-allowed;
+          color: #adb5bd;
+        }
+
+        /* Confirmation Step Styles */
+        .bookApntmt__confirmation {
+          text-align: center;
+          padding: 40px 20px;
+        }
+
+        .bookApntmt__confirmationIcon {
+          width: 80px;
+          height: 80px;
+          background: #04bd6c;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 20px;
+          color: white;
+        }
+
+        .bookApntmt__confirmationTitle {
+          font-size: 24px;
+          font-weight: 600;
+          color: #212529;
+          margin-bottom: 10px;
+        }
+
+        .bookApntmt__confirmationText {
+          color: #6c757d;
+          margin-bottom: 30px;
+          font-size: 16px;
+          max-width: 500px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .bookApntmt__appointmentDetails {
+          background: #f8f9fa;
+          border-radius: 12px;
+          padding: 25px;
+          margin-bottom: 30px;
+          text-align: left;
+        }
+
+        .bookApntmt__detailRow {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 12px;
+          font-size: 14px;
+        }
+
+        .bookApntmt__detailLabel {
+          color: #6c757d;
+          font-weight: 500;
+        }
+
+        .bookApntmt__detailValue {
+          color: #212529;
+          font-weight: 600;
+        }
+
+        .bookApntmt__totalAmount {
+          display: flex;
+          justify-content: space-between;
+          font-size: 18px;
+          font-weight: 700;
+          color: #0d6efd;
+          border-top: 2px solid #dee2e6;
+          padding-top: 15px;
+          margin-top: 15px;
+        }
+
+        .bookApntmt__actionButtons {
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+          margin-top: 30px;
+          flex-wrap: wrap;
+        }
+
+        .bookApntmt__btnDownload {
+          background: #2ecc71;
+          color: white;
+        }
+
+        .bookApntmt__btnDownload:hover {
+          background: #27ae60;
+        }
+
+        .bookApntmt__btnPrint {
+          background: #3498db;
+          color: white;
+        }
+
+        .bookApntmt__btnPrint:hover {
+          background: #2980b9;
+        }
+
+        .bookApntmt__btnDashboard {
+          background: #1e293b;
+          color: white;
+        }
+
+        .bookApntmt__btnDashboard:hover {
+          background: #0f172a;
+        }
+
+        @media (max-width: 768px) {
+          .bookApntmt__stepper {
+            overflow-x: auto;
+            justify-content: flex-start;
+            padding-bottom: 10px;
+          }
+
+          .bookApntmt__calendar {
+            flex-direction: column;
+          }
+
+          .bookApntmt__calendarHeader {
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
+          }
+
+          .bookApntmt__calendarSelects {
+            justify-content: center;
+          }
+
+          .bookApntmt__typeGrid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .bookApntmt__actions {
+            flex-direction: column;
+          }
+
+          .bookApntmt__btnNext {
+            margin-left: 0;
+          }
+
+          .bookApntmt__actionButtons {
+            flex-direction: column;
+          }
+
+          .bookApntmt__actionButtons .bookApntmt__btn {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+
+
+
+        /* Doctor Selection Styles */
+.bookApntmt__doctorsListContainer {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #e6e8ee;
+  border-radius: 12px;
+  padding: 15px;
+  background: #fff;
+}
+
+.bookApntmt__doctorCard {
+  border: 2px solid #e6e8ee;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.bookApntmt__doctorCard:hover {
+  border-color: #41c0d6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(65, 192, 214, 0.15);
+}
+
+.bookApntmt__doctorCard.selected {
+  border-color: #41c0d6;
+  background: linear-gradient(135deg, #f8fdff 0%, #f0f9ff 100%);
+  box-shadow: 0 4px 20px rgba(65, 192, 214, 0.2);
+}
+
+.bookApntmt__doctorCardContent {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.bookApntmt__doctorAvatarSection {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.bookApntmt__doctorAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bookApntmt__availableBadge {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #04bd6c;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(4, 189, 108, 0.3);
+}
+
+.bookApntmt__doctorInfoSection {
+  flex: 1;
+}
+
+.bookApntmt__doctorName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bookApntmt__doctorName .bookApntmt__rating {
+  background: #ff6b35;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.bookApntmt__doctorSpecialty {
+  color: #41c0d6;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.bookApntmt__doctorQualifications {
+  color: #6c757d;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.bookApntmt__doctorDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.bookApntmt__doctorDetail {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.bookApntmt__doctorDetail svg {
+  color: #41c0d6;
+}
+
+.bookApntmt__doctorActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.bookApntmt__viewProfileBtn {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #6c757d;
+}
+
+.bookApntmt__viewProfileBtn:hover {
+  background: #41c0d6;
+  color: white;
+  border-color: #41c0d6;
+  transform: scale(1.05);
+}
+
+.bookApntmt__consultationFee {
+  text-align: right;
+  font-size: 14px;
+}
+
+.bookApntmt__consultationFee span {
+  color: #6c757d;
+}
+
+.bookApntmt__consultationFee strong {
+  color: #212529;
+  font-size: 16px;
+}
+
+.bookApntmt__doctorSelectedIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  padding: 8px 15px;
+  background: rgba(65, 192, 214, 0.1);
+  border-radius: 8px;
+  color: #41c0d6;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px dashed #41c0d6;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar Styling */
+.bookApntmt__doctorsListContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bookApntmt__doctorsListContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.bookApntmt__doctorsListContainer::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.bookApntmt__doctorsListContainer::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Search Bar Styling */
+.bookApntmt__doctorsListContainer .input-group {
+  margin-bottom: 20px;
+}
+
+.bookApntmt__doctorsListContainer .input-group .form-control {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 14px;
+}
+
+.bookApntmt__doctorsListContainer .input-group .form-control:focus {
+  border-color: #41c0d6;
+  box-shadow: 0 0 0 0.2rem rgba(65, 192, 214, 0.25);
+}
+
+.bookApntmt__doctorsListContainer .input-group-text {
+  border: 1px solid #dee2e6;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bookApntmt__doctorCardContent {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .bookApntmt__doctorActions {
+    align-items: center;
+    margin-top: 15px;
+  }
+
+  .bookApntmt__doctorDetails {
+    justify-content: center;
+  }
+
+  .bookApntmt__doctorName {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}

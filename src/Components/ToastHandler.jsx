@@ -19,7 +19,7 @@ const ToastHandler = () => {
       
       toast.error(errorMessage, {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 2500,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -36,7 +36,7 @@ const ToastHandler = () => {
   return (
     <ToastContainer
       position="top-right"
-      autoClose={3000}
+      autoClose={2500}
       hideProgressBar={false}
       newestOnTop={false}
       closeOnClick

@@ -12,7 +12,9 @@ const DoctorCard = ({ doctor }) => {
     <div className="col-lg-3 col-md-6 mb-4">
       <div
         className="doctor-card"
-        onClick={() => navigate(`/doctor-profile/${doctor.id}`)}
+        onClick={() => navigate('/doctor-profile',{
+          state: {doctor}
+        })}
       >
         <div className="doctor-image-wrapper">
           <img
@@ -26,7 +28,7 @@ const DoctorCard = ({ doctor }) => {
           <div className="rating-badge">
             <span className="star">★</span> {doctor.rating || 4.8}
           </div>
-          <p className="consultation-fee">${doctor.fee}</p>
+          {/* <p className="consultation-fee">${doctor.fee}</p> */}
         </div>
 
         <div className="doctor-info">
@@ -52,7 +54,9 @@ const DoctorCard = ({ doctor }) => {
                 className="View-Profile-btn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/doctor-profile/${doctor.id}`);
+                  navigate('/doctor-profile',{
+                    state: {doctor}
+                  });
                 }}
               >
                 View Profile
@@ -62,7 +66,9 @@ const DoctorCard = ({ doctor }) => {
               className="btn-book"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate("/booking");
+                navigate("/booking",{
+                  state: {doctor}
+                });
                 console.log("Book now clicked for:", doctor.name);
               }}
             >

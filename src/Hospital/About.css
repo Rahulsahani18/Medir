@@ -134,14 +134,14 @@
         }
 
         /* About Section */
-        .about-section {
+        /* .main-about-section {
           background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
           padding: 100px 0;
           position: relative;
           overflow: hidden;
         }
 
-        .about-section::before {
+        .main-about-section::before {
           content: '';
           position: absolute;
           top: 0;
@@ -149,7 +149,7 @@
           right: 0;
           bottom: 0;
           background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%);
-        }
+        } */
 
         .about-image-wrapper {
           position: relative;
@@ -731,7 +731,7 @@
               url('https://doctean.themeht.com/wp-content/uploads/2024/03/20.jpg');
   background-size: cover;
   background-position: center;
-  /* background-attachment: fixed; */
+  background-attachment: fixed;
   min-height: 90vh;
   display: flex;
   align-items: center;

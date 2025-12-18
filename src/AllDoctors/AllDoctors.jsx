@@ -13,12 +13,24 @@ import {
   Clock,
   Building,
 } from "lucide-react";
-import { HiBuildingOffice2, HiChevronDown as HiChevronDownIcon } from "react-icons/hi2";
+import {
+  HiBuildingOffice2,
+  HiChevronDown as HiChevronDownIcon,
+} from "react-icons/hi2";
 import "../AllDoctors/AllDoctors.css";
+import { useSelector } from "react-redux";
 
 const AllDoctors = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Get Redux state - Access the nested structure correctly
+  const doctorsState = useSelector((state) => state.doctors);
+
+  // Extract doctors array from the nested structure - use ORIGINAL data
+  const doctorsFromAPI = doctorsState?.doctors?.doctors || [];
+  console.log("Original doctors from API:", doctorsFromAPI);
+  console.log("Number of doctors:", doctorsFromAPI.length);
 
   // Get search parameters from navigation state
   const searchParams = location.state || {};
@@ -30,7 +42,7 @@ const AllDoctors = () => {
   const [locationInput, setLocationInput] = useState(
     searchParams.locationQuery || ""
   );
-  
+
   // State for applied filters (what's actually being used to filter)
   const [appliedSearch, setAppliedSearch] = useState(
     searchParams.searchQuery || ""
@@ -38,8 +50,9 @@ const AllDoctors = () => {
   const [appliedLocation, setAppliedLocation] = useState(
     searchParams.locationQuery || ""
   );
-  
-  const [showSpecialitiesDropdown, setShowSpecialitiesDropdown] = useState(false);
+
+  const [showSpecialitiesDropdown, setShowSpecialitiesDropdown] =
+    useState(false);
   const [showLocationsDropdown, setShowLocationsDropdown] = useState(false);
   const [viewMode, setViewMode] = useState("list");
   const [expandedFilters, setExpandedFilters] = useState({
@@ -49,6 +62,7 @@ const AllDoctors = () => {
     experience: false,
     availability: false,
     gender: false,
+    locations: false,
   });
 
   const [filters, setFilters] = useState({
@@ -57,6 +71,7 @@ const AllDoctors = () => {
     availability: [],
     consultationType: [],
     languages: [],
+    locations: [],
     experience: [],
     sortBy: "price-low",
   });
@@ -68,126 +83,7 @@ const AllDoctors = () => {
   const specialityRef = useRef(null);
   const locationRef = useRef(null);
 
-  // All Medical Specialities
-  const medicalSpecialities = [
-    "Aesthetic and Anti-aging Medicine",
-    "Allergy & Immunology",
-    "Anatomic Pathology",
-    "Anesthesia",
-    "Audiology",
-    "Brain & Spine Surgery",
-    "Breast Surgery",
-    "Cardiac Anesthesia",
-    "Cardiac Surgery",
-    "Cardiology",
-    "Cardiothoracic Surgery",
-    "Chinese and Oriental Medicine",
-    "Chiropractic",
-    "Colorectal & Laparoscopic Surgery",
-    "Cosmetic Surgery",
-    "Dental Surgery",
-    "Dentistry",
-    "Dermatology",
-    "Dermatology & Cosmetology",
-    "Diabetology",
-    "Diabetology & Endocrinology",
-    "Dietetics",
-    "Emergency Medicine",
-    "Endocrine & Breast Surgery",
-    "Endocrinology",
-    "Endodontics",
-    "ENT",
-    "ENT & Head Neck Surgery",
-    "ENT Surgery",
-    "Family & Occupational Medicine",
-    "Family Physician",
-    "Gastroenterology",
-    "Gastroenterology & Diabetology",
-    "Gastroenterology & Hepatology",
-    "General & Bariatric Surgery",
-    "General Medicine",
-    "General Physician",
-    "General Surgery",
-    "Geriatric Medicine",
-    "Haematology",
-    "Hair Implantation and Transplantation",
-    "Hematology Oncology",
-    "Hepatology",
-    "HistopathologY",
-    "Homeopathic",
-    "Infectious Diseases",
-    "Infertility Specialist",
-    "Intensivist",
-    "Internal Medicine",
-    "Interventional Cardiology",
-    "Interventional Neurology",
-    "Liver Transplantation Hepatobiliary & Pancreatic Surgery",
-    "Medical Specialist",
-    "Medicine",
-    "Microbiology",
-    "Neonatology",
-    "Nephrology",
-    "Nephrology & Dialysis",
-    "Neurology",
-    "Neuroradiology",
-    "Neurosurgery",
-    "Nuclear Cardiology",
-    "Nuclear Medicine",
-    "Nuclear Medicine and Molecular Imaging",
-    "Nutrition",
-    "Obstetrics & Gynecology",
-    "Oncology",
-    "Oncoplastic Breast Surgery",
-    "Ophthalmology",
-    "Optometry",
-    "Oral & Maxillofacial Surgery",
-    "Orthodontics",
-    "Orthopedic",
-    "Otolaryngologist",
-    "Paedodontics (Pediatric Dentistry)",
-    "Pain Management",
-    "Palliative Medicine",
-    "Pathology",
-    "Pediatric and Adolescent Psychiatry",
-    "Pediatric Anesthesia",
-    "Pediatric Cardiac Surgery",
-    "Pediatric Cardiology",
-    "Pediatric Endocrinology",
-    "Pediatric Gastroenterology",
-    "Pediatric Hematology-Oncology",
-    "Pediatric Nephrology",
-    "Pediatric Neurosurgery",
-    "Pediatric Physiotherapy",
-    "Pediatric Radiology",
-    "Pediatric Surgery",
-    "Pediatric Urology",
-    "Pediatrics",
-    "Periodontics",
-    "Physical Medicine & Rehabilitation",
-    "Physical Therapy",
-    "Physiotherapy",
-    "Plastic Surgery",
-    "Podiatry",
-    "Prosthodontics",
-    "Psychiatry",
-    "Psychology",
-    "Public & Community Health",
-    "Pulmonology",
-    "Pulmonology & Critical Care",
-    "Pulmonology and Sleep Medicine",
-    "Radiation Oncology",
-    "Radiology",
-    "Regenerative Medicine",
-    "Rehabilitation",
-    "Rheumatology",
-    "Sonologist",
-    "Speech Therapy",
-    "Spinal and Orthopedic Surgery",
-    "Urology",
-    "Vascular Surgery",
-  ];
-
-  // All Popular Locations
+  // All Popular Locations (keep as static fallback for dropdown)
   const popularLocations = [
     "New York, NY",
     "Los Angeles, CA",
@@ -221,263 +117,188 @@ const AllDoctors = () => {
     "Baltimore, MD",
   ];
 
-  // Mock data for doctors
-  const allDoctors = [
-    {
-      id: 1,
-      name: "Dr. Charles Scott",
-      specialty: "Neurology",
-      rating: 4.8,
-      location: "New York, NY",
-      duration: "30 Min",
-      fee: 600,
-      gender: "Male",
-      experience: 20,
-      languages: ["English", "French"],
-      availableToday: true,
-      nextAvailable: "10:00 AM - 15 Oct, Tue",
-      qualifications: "MBBS, DNB - Neurology",
-      votes: "98% (252 / 287 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-teal",
-    },
-    {
-      id: 2,
-      name: "Dr. Robert Thomas",
-      specialty: "Cardiology",
-      rating: 4.3,
-      location: "Los Angeles, CA",
-      duration: "45 Min",
-      fee: 450,
-      gender: "Male",
-      experience: 30,
-      languages: ["English", "Spanish"],
-      availableToday: false,
-      nextAvailable: "11:00 AM - 19 Oct, Sat",
-      qualifications: "MBBS, MD - Cardiology",
-      votes: "92% (270 / 300 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-info",
-    },
-    {
-      id: 3,
-      name: "Dr. Margaret Koller",
-      specialty: "Psychiatry",
-      rating: 4.7,
-      location: "Chicago, IL",
-      duration: "50 Min",
-      fee: 700,
-      gender: "Female",
-      experience: 15,
-      languages: ["English", "Portuguese"],
-      availableToday: true,
-      nextAvailable: "10:30 AM - 29 Oct, Tue",
-      qualifications: "B.S, M.S - Psychology",
-      votes: "94% (268 / 312 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-indigo",
-    },
-    {
-      id: 4,
-      name: "Dr. Cath Busick",
-      specialty: "Pediatrics",
-      rating: 4.5,
-      location: "Houston, TX",
-      duration: "40 Min",
-      fee: 750,
-      gender: "Female",
-      experience: 12,
-      languages: ["English", "Arabic"],
-      availableToday: false,
-      nextAvailable: "02:00 PM - 04 Nov, Mon",
-      qualifications: "MBBS, MD - Pediatrics",
-      votes: "87% (237 / 250 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-pink",
-    },
-    {
-      id: 5,
-      name: "Dr. Michael Brown",
-      specialty: "Dermatology",
-      rating: 5.0,
-      location: "Phoenix, AZ",
-      duration: "45 Min",
-      fee: 400,
-      gender: "Male",
-      experience: 18,
-      languages: ["English", "German"],
-      availableToday: true,
-      nextAvailable: "04:00 PM - 20 Nov, Wed",
-      qualifications: "B.S, M.S - Psychology",
-      votes: "90% (228 / 240 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-indigo",
-    },
-    {
-      id: 6,
-      name: "Dr. Nicholas Tello",
-      specialty: "Orthopedic",
-      rating: 4.6,
-      location: "Philadelphia, PA",
-      duration: "35 Min",
-      fee: 400,
-      gender: "Male",
-      experience: 15,
-      languages: ["English", "Korean"],
-      availableToday: true,
-      nextAvailable: "11:00 AM - 14 Nov, Thu",
-      qualifications: "MBBS, MD - Pediatrics",
-      votes: "95% (200 / 220 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-pink",
-    },
-    {
-      id: 7,
-      name: "Dr. Tyrone Patrick",
-      specialty: "Urology",
-      rating: 4.4,
-      location: "San Antonio, TX",
-      duration: "40 Min",
-      fee: 400,
-      gender: "Male",
-      experience: 22,
-      languages: ["English", "Russian"],
-      availableToday: true,
-      nextAvailable: "06:00 PM - 29 Nov, Fri",
-      qualifications: "MBBS, MD - Cardiology",
-      votes: "97% (232 / 248 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-info",
-    },
-    {
-      id: 8,
-      name: "Dr. Sarah Johnson",
-      specialty: "Endocrinology",
-      rating: 4.9,
-      location: "San Diego, CA",
-      duration: "35 Min",
-      fee: 650,
-      gender: "Female",
-      experience: 25,
-      languages: ["English", "French"],
-      availableToday: true,
-      nextAvailable: "09:00 AM - 16 Oct, Wed",
-      qualifications: "MBBS, MD - Neurology",
-      votes: "96% (245 / 255 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-teal",
-    },
-    {
-      id: 9,
-      name: "Dr. James Wilson",
-      specialty: "Pulmonology",
-      rating: 4.7,
-      location: "Dallas, TX",
-      duration: "40 Min",
-      fee: 550,
-      gender: "Male",
-      experience: 28,
-      languages: ["English", "Spanish"],
-      availableToday: false,
-      nextAvailable: "01:00 PM - 18 Oct, Fri",
-      qualifications: "MBBS, MD - Cardiology",
-      votes: "94% (260 / 276 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-info",
-    },
-    {
-      id: 10,
-      name: "Dr. Emily Davis",
-      specialty: "Ophthalmology",
-      rating: 4.8,
-      location: "San Jose, CA",
-      duration: "30 Min",
-      fee: 500,
-      gender: "Female",
-      experience: 16,
-      languages: ["English", "Korean"],
-      availableToday: true,
-      nextAvailable: "10:30 AM - 15 Oct, Tue",
-      qualifications: "MBBS, MD - Pediatrics",
-      votes: "95% (230 / 242 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-pink",
-    },
-    {
-      id: 11,
-      name: "Dr. David Miller",
-      specialty: "Gastroenterology",
-      rating: 4.6,
-      location: "Austin, TX",
-      duration: "40 Min",
-      fee: 480,
-      gender: "Male",
-      experience: 14,
-      languages: ["English", "Hindi"],
-      availableToday: true,
-      nextAvailable: "02:00 PM - 16 Oct, Wed",
-      qualifications: "MBBS, MD - Gastroenterology",
-      votes: "93% (210 / 225 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-info",
-    },
-    {
-      id: 12,
-      name: "Dr. Lisa Anderson",
-      specialty: "Obstetrics & Gynecology",
-      rating: 4.9,
-      location: "Jacksonville, FL",
-      duration: "45 Min",
-      fee: 520,
-      gender: "Female",
-      experience: 19,
-      languages: ["English", "Spanish"],
-      availableToday: false,
-      nextAvailable: "09:30 AM - 17 Oct, Thu",
-      qualifications: "MBBS, MD - Gynecology",
-      votes: "96% (245 / 255 Votes)",
-      image:
-        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&crop=face",
-      specialtyColor: "text-pink",
-    },
-  ];
+  // Extract unique specialities from ORIGINAL API data
+  const getUniqueSpecialities = (doctors) => {
+    if (!doctors || !Array.isArray(doctors)) return [];
 
+    const specialitiesSet = new Set();
+    doctors.forEach((doctor) => {
+      if (doctor.specialty && doctor.specialty.trim() !== "") {
+        specialitiesSet.add(doctor.specialty);
+      }
+    });
+
+    // Convert Set to array and sort alphabetically
+    return Array.from(specialitiesSet).sort();
+  };
+
+  // Extract unique locations from ORIGINAL API data
+  const getUniqueLocations = (doctors) => {
+    if (!doctors || !Array.isArray(doctors)) return [];
+
+    const locationsSet = new Set();
+    doctors.forEach((doctor) => {
+      // Check location
+      const location = doctor.location;
+      if (location && location.trim() !== "" && location !== "Unknown Location") {
+        locationsSet.add(location);
+      }
+    });
+
+    // Convert Set to array and sort alphabetically
+    const locationsArray = Array.from(locationsSet).sort();
+
+    // Add fallback if no locations found
+    if (locationsArray.length === 0) {
+      return ["New York, NY", "Los Angeles, CA"]; // Default fallback
+    }
+
+    return locationsArray;
+  };
+
+  // Extract unique languages from ORIGINAL API data
+  const getUniqueLanguages = (doctors) => {
+    if (!doctors || !Array.isArray(doctors)) return [];
+
+    const languagesSet = new Set();
+    doctors.forEach((doctor) => {
+      if (doctor.languages && Array.isArray(doctor.languages)) {
+        doctor.languages.forEach((language) => {
+          if (language && language.trim() !== "") {
+            languagesSet.add(language);
+          }
+        });
+      }
+    });
+
+    // Convert Set to array and sort alphabetically
+    const languagesArray = Array.from(languagesSet).sort();
+
+    // Add "English" as default if no languages exist
+    if (languagesArray.length === 0) {
+      return ["English"];
+    }
+
+    return languagesArray;
+  };
+
+  // Consultation types for filtering
   const consultationTypes = [
     "Audio Call",
     "Video Call",
     "Instant Counseling",
     "Chat",
   ];
-  const languages = [
-    "English",
-    "Hindi",
-    "French",
-    "Spanish",
-    "Portuguese",
-    "Arabic",
-    "German",
-    "Korean",
-    "Russian",
-  ];
+  
   const experiences = ["2+ Years", "5+ Years", "10+ Years", "15+ Years"];
   const availabilityOptions = ["Available Today", "Available Tomorrow"];
   const genders = ["Male", "Female"];
 
+  // Dynamically generate from ORIGINAL API data
+  const medicalSpecialities = getUniqueSpecialities(doctorsFromAPI);
+  const uniqueLocations = getUniqueLocations(doctorsFromAPI);
+  const uniqueLanguages = getUniqueLanguages(doctorsFromAPI);
+
+  // Helper function to get display properties from ORIGINAL doctor data
+  const getDisplayProperties = (doctor, index) => {
+    // Generate specialty colors based on index for consistent colors
+    const specialtyColors = [
+      "text-teal",
+      "text-info",
+      "text-indigo",
+      "text-pink",
+    ];
+    const specialtyColor = specialtyColors[index % specialtyColors.length];
+
+    // Get rating - use from API or default
+    const rating = doctor.rating || 4.5;
+
+    // Get next available time - use from API or generate default
+    const nextAvailable = doctor.nextAvailable || "10:00 AM - 15 Oct, Tue";
+
+    // Get location - use from API or fallback
+    let location = doctor.location;
+    if (!location || location.trim() === "") {
+      location = popularLocations[index % popularLocations.length] || "Unknown Location";
+    }
+
+    // Get image URL - use from API or fallback
+    let imageUrl = doctor.image;
+    if (!imageUrl || imageUrl.trim() === "") {
+      // Use gender-specific placeholder images
+      const gender = doctor.gender || "Male";
+      if (gender === "Female") {
+        imageUrl =
+          "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&crop=face";
+      } else {
+        imageUrl =
+          "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face";
+      }
+    }
+
+    // Get fee - if 0, use a reasonable default
+    const fee = doctor.fee && doctor.fee > 0 ? doctor.fee : 400;
+
+    // Get specialty - ensure it's not empty
+    const specialty = doctor.specialty || "General Medicine";
+
+    // Get languages from API or use default
+    const languages =
+      doctor.languages && Array.isArray(doctor.languages)
+        ? doctor.languages
+        : ["English"];
+
+    // Get votes - use from API or generate default
+    const votes = doctor.votes || "95% (200 / 210 Votes)";
+
+    // Get qualifications
+    const qualifications = doctor.qualifications || "MBBS";
+
+    // Get experience
+    const experience = doctor.experience || 5;
+
+    // Get availableToday status
+    const availableToday = doctor.availableToday !== undefined ? doctor.availableToday : true;
+
+    // Get duration
+    const duration = doctor.duration || "30 Min";
+
+    // Get gender
+    const gender = doctor.gender || "Male";
+
+    // Get name
+    const name = doctor.name || "Dr. Unknown";
+
+    // Get ID
+    const id = doctor.id || index + 1;
+
+    return {
+      id: id,
+      name: name,
+      specialty: specialty,
+      rating: parseFloat(rating.toFixed(1)),
+      location: location,
+      duration: duration,
+      fee: fee,
+      gender: gender,
+      experience: experience,
+      languages: languages,
+      availableToday: availableToday,
+      nextAvailable: nextAvailable,
+      qualifications: qualifications,
+      votes: votes,
+      image: imageUrl,
+      specialtyColor: specialtyColor,
+    };
+  };
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (specialityRef.current && !specialityRef.current.contains(event.target)) {
+      if (
+        specialityRef.current &&
+        !specialityRef.current.contains(event.target)
+      ) {
         setShowSpecialitiesDropdown(false);
       }
       if (locationRef.current && !locationRef.current.contains(event.target)) {
@@ -485,9 +306,9 @@ const AllDoctors = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -495,7 +316,7 @@ const AllDoctors = () => {
   useEffect(() => {
     if (searchParams.searchQuery || searchParams.locationQuery) {
       console.log("Processing search params from Home:", searchParams);
-      
+
       // Set both input values and applied filters
       setSearchInput(searchParams.searchQuery || "");
       setLocationInput(searchParams.locationQuery || "");
@@ -504,15 +325,17 @@ const AllDoctors = () => {
     }
   }, [searchParams]);
 
-  // Handle speciality selection from dropdown
+  // Handle speciality selection from dropdown - UPDATED: Only updates input, not applied filter
   const handleSpecialitySelect = (speciality) => {
     setSearchInput(speciality);
+    // Removed: setAppliedSearch(speciality); - No auto-apply anymore
     setShowSpecialitiesDropdown(false);
   };
 
-  // Handle location selection from dropdown
+  // Handle location selection from dropdown - UPDATED: Only updates input, not applied filter
   const handleLocationSelect = (location) => {
     setLocationInput(location);
+    // Removed: setAppliedLocation(location); - No auto-apply anymore
     setShowLocationsDropdown(false);
   };
 
@@ -528,7 +351,7 @@ const AllDoctors = () => {
     setShowSpecialitiesDropdown(false);
   };
 
-  // Handle search button click
+  // Handle search button click - UPDATED: Applies both input values to filters
   const handleSearch = (e) => {
     e.preventDefault();
     // Apply the search filters only when button is clicked
@@ -537,69 +360,105 @@ const AllDoctors = () => {
     setCurrentPage(1); // Reset to first page on new search
   };
 
-  // Filter doctors based on APPLIED search and filters
-  const filteredDoctors = allDoctors.filter((doctor) => {
+  // Filter doctors based on ORIGINAL API data
+  const filteredDoctors = doctorsFromAPI.filter((doctor, index) => {
+    const displayProps = getDisplayProperties(doctor, index);
+    
+    console.log(
+      "Filtering doctor:",
+      doctor.name,
+      "with specialty:",
+      doctor.specialty
+    );
+
     // Speciality filter (using APPLIED search, not input)
     const specialityLower = appliedSearch.toLowerCase();
     const matchesSpeciality =
       appliedSearch === "" ||
-      doctor.specialty.toLowerCase().includes(specialityLower) ||
-      doctor.name.toLowerCase().includes(specialityLower) ||
-      doctor.qualifications.toLowerCase().includes(specialityLower);
+      (doctor.specialty && doctor.specialty.toLowerCase().includes(specialityLower)) ||
+      (doctor.name && doctor.name.toLowerCase().includes(specialityLower)) ||
+      (doctor.qualifications &&
+        doctor.qualifications.toLowerCase().includes(specialityLower));
 
     // Location filter (using APPLIED location, not input)
     const locationLower = appliedLocation.toLowerCase();
+    const doctorLocation = doctor.location || displayProps.location;
     const matchesLocation =
       appliedLocation === "" ||
-      doctor.location.toLowerCase().includes(locationLower);
+      doctorLocation.toLowerCase().includes(locationLower);
 
-    // Checkbox filters
+    // Checkbox filters - SPECIALITIES FILTER
+    const doctorSpecialty = doctor.specialty || displayProps.specialty;
     const matchesCheckboxSpecialities =
       filters.specialities.length === 0 ||
-      filters.specialities.some((speciality) =>
-        doctor.specialty.toLowerCase().includes(speciality.toLowerCase())
-      );
+      filters.specialities.includes(doctorSpecialty);
 
+    // Checkbox filters - LOCATIONS FILTER
+    const matchesCheckboxLocations =
+      filters.locations.length === 0 ||
+      filters.locations.includes(doctorLocation);
+
+    // Gender filter
+    const doctorGender = doctor.gender || displayProps.gender;
     const matchesGender =
-      filters.gender.length === 0 || filters.gender.includes(doctor.gender);
+      filters.gender.length === 0 ||
+      filters.gender.includes(doctorGender);
 
+    // Availability filter
+    const doctorAvailableToday = doctor.availableToday !== undefined ? doctor.availableToday : displayProps.availableToday;
     const matchesAvailability =
       filters.availability.length === 0 ||
       (filters.availability.includes("Available Today") &&
-        doctor.availableToday) ||
+        doctorAvailableToday) ||
       (filters.availability.includes("Available Tomorrow") &&
-        !doctor.availableToday);
+        !doctorAvailableToday);
 
+    // Languages filter - check if doctor has ANY of the selected languages
+    const doctorLanguages = doctor.languages || displayProps.languages;
     const matchesLanguages =
       filters.languages.length === 0 ||
-      filters.languages.some((lang) => doctor.languages.includes(lang));
+      filters.languages.some((lang) =>
+        doctorLanguages.some(
+          (doctorLang) => doctorLang.toLowerCase() === lang.toLowerCase()
+        )
+      );
 
+    // Experience filter
+    const doctorExperience = doctor.experience || displayProps.experience;
     const matchesExperience =
       filters.experience.length === 0 ||
-      (filters.experience.includes("2+ Years") && doctor.experience >= 2) ||
-      (filters.experience.includes("5+ Years") && doctor.experience >= 5) ||
-      (filters.experience.includes("10+ Years") && doctor.experience >= 10) ||
-      (filters.experience.includes("15+ Years") && doctor.experience >= 15);
+      (filters.experience.includes("2+ Years") && doctorExperience >= 2) ||
+      (filters.experience.includes("5+ Years") && doctorExperience >= 5) ||
+      (filters.experience.includes("10+ Years") && doctorExperience >= 10) ||
+      (filters.experience.includes("15+ Years") && doctorExperience >= 15);
 
-    return (
+    const result =
       matchesSpeciality &&
       matchesLocation &&
       matchesCheckboxSpecialities &&
+      matchesCheckboxLocations &&
       matchesGender &&
       matchesAvailability &&
       matchesLanguages &&
-      matchesExperience
-    );
+      matchesExperience;
+
+    console.log("Final result for", doctor.name, ":", result);
+    return result;
   });
 
-  // Sort doctors
+  console.log("Filtered doctors count:", filteredDoctors.length);
+
+  // Sort doctors based on display properties
   const sortedDoctors = [...filteredDoctors].sort((a, b) => {
+    const displayA = getDisplayProperties(a, doctorsFromAPI.indexOf(a));
+    const displayB = getDisplayProperties(b, doctorsFromAPI.indexOf(b));
+    
     if (filters.sortBy === "price-low") {
-      return a.fee - b.fee;
+      return displayA.fee - displayB.fee;
     } else if (filters.sortBy === "price-high") {
-      return b.fee - a.fee;
+      return displayB.fee - displayA.fee;
     } else if (filters.sortBy === "rating") {
-      return b.rating - a.rating;
+      return displayB.rating - displayA.rating;
     }
     return 0;
   });
@@ -620,6 +479,7 @@ const AllDoctors = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleFilterChange = (category, value) => {
+    console.log("Filter change:", category, value);
     setFilters((prev) => ({
       ...prev,
       [category]: prev[category].includes(value)
@@ -635,6 +495,7 @@ const AllDoctors = () => {
       availability: [],
       consultationType: [],
       languages: [],
+      locations: [],
       experience: [],
       sortBy: "price-low",
     });
@@ -652,30 +513,41 @@ const AllDoctors = () => {
     }));
   };
 
-  // List View Doctor Card
+  // List View Doctor Card - Uses ORIGINAL doctor data
   const DoctorCardList = ({ doctor }) => {
+    const index = doctorsFromAPI.findIndex(d => d.id === doctor.id);
+    const displayProps = getDisplayProperties(doctor, index !== -1 ? index : 0);
+    
+    const handleViewProfile = (e) => {
+      e.stopPropagation();
+      navigate('/doctor-profile', {
+        state: { doctor: doctor } // Pass ORIGINAL doctor data
+      });
+    };
+
+    const handleBookAppointment = (e) => {
+      e.stopPropagation();
+      navigate("/booking", {
+        state: { doctor: doctor } // Pass ORIGINAL doctor data
+      });
+    };
+
     return (
       <div className="col-lg-12">
-        <div className="card doctor-list-card" 
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/doctor-profile/${doctor.id}`)
-          }}
+        <div
+          className="card doctor-list-card"
+          onClick={handleViewProfile}
+          style={{cursor:"pointer"}}
         >
           <div className="d-md-flex align-items-center">
             {/* Doctor Image */}
             <div className="card-img card-img-hover">
-              <Link to={`/doctor-profile/${doctor.id}`}>
-                <img alt={doctor.name} src={doctor.image} />
-              </Link>
+              <img alt={displayProps.name} src={displayProps.image} />
               <div className="grid-overlay-item d-flex align-items-center justify-content-between">
                 <span className="badge bg-orange">
                   <Star size={12} className="me-1" />
-                  {doctor.rating}
+                  {displayProps.rating}
                 </span>
-                <a className="fav-icon" href="#">
-                  <Heart size={14} />
-                </a>
               </div>
             </div>
 
@@ -683,21 +555,18 @@ const AllDoctors = () => {
             <div className="card-body p-0">
               {/* Specialty and Availability */}
               <div className="d-flex align-items-center justify-content-between border-bottom p-3">
-                <a
-                  className={`${doctor.specialtyColor} fw-medium fs-14`}
-                  href="#"
-                >
-                  {doctor.specialty}
-                </a>
+                <span className={`${displayProps.specialtyColor} fw-medium fs-14`}>
+                  {displayProps.specialty}
+                </span>
                 <span
                   className={`badge ${
-                    doctor.availableToday
+                    displayProps.availableToday
                       ? "bg-success-light"
                       : "bg-danger-light"
                   } d-inline-flex align-items-center`}
                 >
                   <span className="dot me-1"></span>
-                  {doctor.availableToday ? "Available" : "Unavailable"}
+                  {displayProps.availableToday ? "Available" : "Unavailable"}
                 </span>
               </div>
 
@@ -709,17 +578,18 @@ const AllDoctors = () => {
                     <div className="col-sm-6">
                       <div>
                         <h6 className="d-flex align-items-center mb-1">
-                          <Link to={`/doctor-profile/${doctor.id}`}>
-                            {doctor.name}
-                          </Link>
+                          {displayProps.name}
                           <span className="tick-circle text-success ms-2">
                             ✓
                           </span>
                         </h6>
-                        <p className="mb-2">{doctor.qualifications}</p>
+                        <p className="mb-2">
+                          {displayProps.qualifications} -{" "}
+                          <span>{displayProps.specialty}</span>
+                        </p>
                         <p className="d-flex align-items-center mb-0 fs-14">
                           <MapPin size={14} className="me-2" />
-                          {doctor.location}
+                          {displayProps.location}
                           <a
                             className="text-primary text-decoration-underline ms-2"
                             href="#"
@@ -735,15 +605,15 @@ const AllDoctors = () => {
                       <div>
                         <p className="d-flex align-items-center mb-0 fs-14 mb-2">
                           <span className="language-icon me-2">🌐</span>
-                          {doctor.languages.join(", ")}
+                          {displayProps.languages.join(", ")}
                         </p>
                         <p className="d-flex align-items-center mb-0 fs-14 mb-2">
                           <span className="like-icon me-2">👍</span>
-                          {doctor.votes}
+                          {displayProps.votes}
                         </p>
                         <p className="d-flex align-items-center mb-0 fs-14">
                           <span className="experience-icon me-2">📚</span>
-                          {doctor.experience} Years of Experience
+                          {displayProps.experience} Years of Experience
                         </p>
                       </div>
                     </div>
@@ -753,25 +623,18 @@ const AllDoctors = () => {
                 {/* Consultation Fees and Booking */}
                 <div className="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mt-3">
                   <div className="d-flex align-items-center flex-wrap row-gap-3">
-                    <div className="me-3">
-                      <p className="mb-1">Consultation Fees</p>
-                      <h4 className="text-orange">${doctor.fee}</h4>
-                    </div>
                     <p className="">
                       Next available at <br />
-                      {doctor.nextAvailable}
+                      {displayProps.nextAvailable}
                     </p>
                   </div>
-                  <a
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate("/booking");
-                    }}
+                  <button
+                    onClick={handleBookAppointment}
                     className="btn btn-md btn-primary-gradient d-inline-flex align-items-center rounded-pill"
                   >
                     <Calendar size={14} className="me-2" />
                     Book Appointment
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -781,48 +644,70 @@ const AllDoctors = () => {
     );
   };
 
-  // Grid View Doctor Card
+  // Grid View Doctor Card - Uses ORIGINAL doctor data
   const DoctorCardGrid = ({ doctor }) => {
+    const index = doctorsFromAPI.findIndex(d => d.id === doctor.id);
+    const displayProps = getDisplayProperties(doctor, index !== -1 ? index : 0);
+    
+    const handleViewProfile = (e) => {
+      e.stopPropagation();
+      navigate('/doctor-profile', {
+        state: { doctor: doctor } // Pass ORIGINAL doctor data
+      });
+    };
+
+    const handleBookNow = (e) => {
+      e.stopPropagation();
+      navigate("/booking", {
+        state: { doctor: doctor } // Pass ORIGINAL doctor data
+      });
+    };
+
+    const handleViewProfileClick = (e) => {
+      e.stopPropagation();
+      navigate('/doctor-profile', {
+        state: { doctor: doctor } // Pass ORIGINAL doctor data
+      });
+    };
+
     return (
       <div className="col-lg-4 col-md-6 mb-4">
-        <div className="allDoctors-doctor-card" 
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/doctor-profile/${doctor.id}`);
-          }}
+        <div
+          className="allDoctors-doctor-card"
+          onClick={handleViewProfile}
         >
           <div className="allDoctors-doctor-image-wrapper">
             <img
-              src={doctor.image}
-              alt={doctor.name}
+              src={displayProps.image}
+              alt={displayProps.name}
               className="allDoctors-doctor-image"
             />
             <div className="allDoctors-rating-badge">
               <Star size={14} className="allDoctors-star" />
-              {doctor.rating}
+              {displayProps.rating}
             </div>
 
-            <h4 className="text-orange-viewGrid">$ {doctor.fee}</h4>
+            {/* <h4 className="text-orange-viewGrid">$ {displayProps.fee}</h4> */}
           </div>
 
           <div className="allDoctors-doctor-info">
             <div className="allDoctors-specialty-status">
-              <span className="allDoctors-specialty">{doctor.specialty}</span>
+              <span className="allDoctors-specialty">{displayProps.specialty}</span>
               <span
                 className={`allDoctors-status ${
-                  doctor.availableToday ? "available" : "unavailable"
+                  displayProps.availableToday ? "available" : "unavailable"
                 }`}
               >
-                ● {doctor.availableToday ? "Available" : "Unavailable"}
+                ● {displayProps.availableToday ? "Available" : "Unavailable"}
               </span>
             </div>
 
-            <h5 className="allDoctors-doctor-name">{doctor.name}</h5>
+            <h5 className="allDoctors-doctor-name">{displayProps.name}</h5>
 
             <div className="allDoctors-doctor-details">
               <MapPin size={14} className="allDoctors-icon" />
               <span>
-                {doctor.location} • {doctor.duration}
+                {displayProps.location} • {displayProps.duration}
               </span>
             </div>
 
@@ -830,17 +715,14 @@ const AllDoctors = () => {
               <div>
                 <button
                   className="btn-view-profile btn-primary-gradient rounded-pill"
-                  onClick={() => navigate(`/doctor-profile/${doctor.id}`)}
+                  onClick={handleViewProfileClick}
                 >
                   View Profile
                 </button>
               </div>
               <button
                 className="btn-primary-gradient rounded-pill"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/booking");
-                }}
+                onClick={handleBookNow}
               >
                 Book Now
               </button>
@@ -883,12 +765,59 @@ const AllDoctors = () => {
 
   const FilterCheckbox = ({ label, checked, onChange, count }) => (
     <label className="allDoctors-filter-checkbox">
-      <input type="checkbox" checked={checked} onChange={onChange} />
+      <input 
+        type="checkbox" 
+        checked={checked} 
+        onChange={onChange} 
+      />
       <span className="allDoctors-checkmark"></span>
       <span className="allDoctors-filter-label">{label}</span>
       {count && <span className="allDoctors-filter-count">({count})</span>}
     </label>
   );
+
+  // Check if data is loading
+  if (doctorsState?.loading) {
+    return (
+      <div className="allDoctors-container">
+        <div className="container-fluid">
+          <div className="allDoctors-header">
+            <h1 className="allDoctors-main-title">
+              Search for Doctors, Hospitals, Clinics
+            </h1>
+          </div>
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Loading doctors...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if there's an error
+  if (doctorsState?.error) {
+    return (
+      <div className="allDoctors-container">
+        <div className="container-fluid">
+          <div className="allDoctors-header">
+            <h1 className="allDoctors-main-title">
+              Search for Doctors, Hospitals, Clinics
+            </h1>
+          </div>
+          <div className="alert alert-danger mt-4" role="alert">
+            <h4 className="alert-heading text-center">Error loading doctors</h4>
+            <p>
+              {doctorsState.error.message ||
+                "Failed to load doctors. Please try again later."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="allDoctors-container">
@@ -901,7 +830,10 @@ const AllDoctors = () => {
           <div className="AllDoctor-search-box">
             <form className="d-flex align-items-center" onSubmit={handleSearch}>
               {/* Speciality Selection Dropdown */}
-              <div className="search-input-wrapper speciality-select-wrapper" ref={specialityRef}>
+              <div
+                className="search-input-wrapper speciality-select-wrapper"
+                ref={specialityRef}
+              >
                 <i className="search-icon">
                   <HiBuildingOffice2 size={20} />
                 </i>
@@ -917,7 +849,9 @@ const AllDoctors = () => {
                   <button
                     type="button"
                     className="dropdown-toggle"
-                    onClick={() => setShowSpecialitiesDropdown(!showSpecialitiesDropdown)}
+                    onClick={() =>
+                      setShowSpecialitiesDropdown(!showSpecialitiesDropdown)
+                    }
                   >
                     <HiChevronDownIcon size={16} />
                   </button>
@@ -929,15 +863,25 @@ const AllDoctors = () => {
                           <span>What</span>
                           <h4>Search Doctors, Conditions, or</h4>
                         </div>
-                        {medicalSpecialities.map((speciality, index) => (
-                          <div
-                            key={index}
-                            className={`selection-option ${searchInput === speciality ? 'selected' : ''}`}
-                            onClick={() => handleSpecialitySelect(speciality)}
-                          >
-                            <span className="option-text">{speciality}</span>
+                        {medicalSpecialities.length > 0 ? (
+                          medicalSpecialities.map((speciality, index) => (
+                            <div
+                              key={index}
+                              className={`selection-option ${
+                                searchInput === speciality ? "selected" : ""
+                              }`}
+                              onClick={() => handleSpecialitySelect(speciality)}
+                            >
+                              <span className="option-text">{speciality}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="selection-option">
+                            <span className="option-text">
+                              No specialities available
+                            </span>
                           </div>
-                        ))}
+                        )}
                       </div>
                     </div>
                   )}
@@ -945,7 +889,10 @@ const AllDoctors = () => {
               </div>
 
               {/* Location Selection Dropdown */}
-              <div className="search-input-wrapper location-input" ref={locationRef}>
+              <div
+                className="search-input-wrapper location-input"
+                ref={locationRef}
+              >
                 <i className="search-icon">
                   <MapPin size={20} />
                 </i>
@@ -961,7 +908,9 @@ const AllDoctors = () => {
                   <button
                     type="button"
                     className="dropdown-toggle"
-                    onClick={() => setShowLocationsDropdown(!showLocationsDropdown)}
+                    onClick={() =>
+                      setShowLocationsDropdown(!showLocationsDropdown)
+                    }
                   >
                     <HiChevronDownIcon size={16} />
                   </button>
@@ -973,10 +922,16 @@ const AllDoctors = () => {
                           <span>Where</span>
                           <h4>Select Location</h4>
                         </div>
-                        {popularLocations.map((location, index) => (
+                        {/* Show unique locations from backend, fallback to popular locations */}
+                        {(uniqueLocations.length > 0
+                          ? uniqueLocations
+                          : popularLocations
+                        ).map((location, index) => (
                           <div
                             key={index}
-                            className={`selection-option ${locationInput === location ? 'selected' : ''}`}
+                            className={`selection-option ${
+                              locationInput === location ? "selected" : ""
+                            }`}
                             onClick={() => handleLocationSelect(location)}
                           >
                             <span className="option-text">{location}</span>
@@ -1016,16 +971,48 @@ const AllDoctors = () => {
                 scrollable={true}
               >
                 <div className="specialities-scroll-container">
-                  {medicalSpecialities.map((speciality) => (
-                    <FilterCheckbox
-                      key={speciality}
-                      label={speciality}
-                      checked={filters.specialities.includes(speciality)}
-                      onChange={() =>
-                        handleFilterChange("specialities", speciality)
-                      }
-                    />
-                  ))}
+                  {medicalSpecialities.length > 0 ? (
+                    medicalSpecialities.map((speciality) => (
+                      <FilterCheckbox
+                        key={speciality}
+                        label={speciality}
+                        checked={filters.specialities.includes(speciality)}
+                        onChange={() =>
+                          handleFilterChange("specialities", speciality)
+                        }
+                      />
+                    ))
+                  ) : (
+                    <div className="text-muted small p-2">
+                      No specialities available
+                    </div>
+                  )}
+                </div>
+              </FilterSection>
+
+              {/* NEW: Locations Filter Section */}
+              <FilterSection
+                title="Locations"
+                sectionKey="locations"
+                scrollable={true}
+              >
+                <div className="specialities-scroll-container">
+                  {uniqueLocations.length > 0 ? (
+                    uniqueLocations.map((location) => (
+                      <FilterCheckbox
+                        key={location}
+                        label={location}
+                        checked={filters.locations.includes(location)}
+                        onChange={() =>
+                          handleFilterChange("locations", location)
+                        }
+                      />
+                    ))
+                  ) : (
+                    <div className="text-muted small p-2">
+                      No locations available
+                    </div>
+                  )}
                 </div>
               </FilterSection>
 
@@ -1046,14 +1033,20 @@ const AllDoctors = () => {
               </FilterSection>
 
               <FilterSection title="Languages" sectionKey="languages">
-                {languages.map((language) => (
-                  <FilterCheckbox
-                    key={language}
-                    label={language}
-                    checked={filters.languages.includes(language)}
-                    onChange={() => handleFilterChange("languages", language)}
-                  />
-                ))}
+                {uniqueLanguages.length > 0 ? (
+                  uniqueLanguages.map((language) => (
+                    <FilterCheckbox
+                      key={language}
+                      label={language}
+                      checked={filters.languages.includes(language)}
+                      onChange={() => handleFilterChange("languages", language)}
+                    />
+                  ))
+                ) : (
+                  <div className="text-muted small p-2">
+                    No languages available
+                  </div>
+                )}
               </FilterSection>
 
               <FilterSection title="Experience" sectionKey="experience">
@@ -1102,75 +1095,96 @@ const AllDoctors = () => {
               <div className="allDoctors-results-header">
                 <div className="allDoctors-results-info">
                   <span className="allDoctors-doctors-count">
-                    Showing {currentDoctors.length} of {sortedDoctors.length}{" "}
-                    Doctors
-                    {appliedSearch && (
-                      <span className="search-query-info">
-                        {" "}
-                        for "{appliedSearch}"
-                      </span>
-                    )}
-                    {appliedLocation && (
-                      <span className="location-query-info">
-                        {" "}
-                        in "{appliedLocation}"
-                      </span>
+                    {doctorsFromAPI.length === 0 ? (
+                      "No doctors found in the database"
+                    ) : (
+                      <>
+                        Showing {currentDoctors.length} of{" "}
+                        {sortedDoctors.length} Doctors
+                        {appliedSearch && (
+                          <span className="search-query-info">
+                            {" "}
+                            for "{appliedSearch}"
+                          </span>
+                        )}
+                        {appliedLocation && (
+                          <span className="location-query-info">
+                            {" "}
+                            in "{appliedLocation}"
+                          </span>
+                        )}
+                      </>
                     )}
                   </span>
                 </div>
-                <div className="allDoctors-view-controls">
-                  <div className="allDoctors-sort-by">
-                    <span>Sort By:</span>
-                    <select
-                      className="allDoctors-sort-select"
-                      value={filters.sortBy}
-                      onChange={(e) =>
-                        setFilters((prev) => ({
-                          ...prev,
-                          sortBy: e.target.value,
-                        }))
-                      }
-                    >
-                      <option value="price-low">Price (Low to High)</option>
-                      <option value="price-high">Price (High to Low)</option>
-                      <option value="rating">Rating</option>
-                    </select>
+                {doctorsFromAPI.length > 0 && (
+                  <div className="allDoctors-view-controls">
+                    <div className="allDoctors-sort-by">
+                      <span>Sort By:</span>
+                      <select
+                        className="allDoctors-sort-select"
+                        value={filters.sortBy}
+                        onChange={(e) =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            sortBy: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="price-low">Price (Low to High)</option>
+                        <option value="price-high">Price (High to Low)</option>
+                        <option value="rating">Rating</option>
+                      </select>
+                    </div>
+                    <div className="allDoctors-view-toggle">
+                      <button
+                        className={`view-toggle-btn ${
+                          viewMode === "grid" ? "active" : ""
+                        }`}
+                        onClick={() => setViewMode("grid")}
+                      >
+                        <Grid size={18} />
+                      </button>
+                      <button
+                        className={`view-toggle-btn ${
+                          viewMode === "list" ? "active" : ""
+                        }`}
+                        onClick={() => setViewMode("list")}
+                      >
+                        <List size={18} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="allDoctors-view-toggle">
-                    <button
-                      className={`view-toggle-btn ${
-                        viewMode === "grid" ? "active" : ""
-                      }`}
-                      onClick={() => setViewMode("grid")}
-                    >
-                      <Grid size={18} />
-                    </button>
-                    <button
-                      className={`view-toggle-btn ${
-                        viewMode === "list" ? "active" : ""
-                      }`}
-                      onClick={() => setViewMode("list")}
-                    >
-                      <List size={18} />
-                    </button>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Doctors List/Grid */}
               <div className="row">
-                {currentDoctors.length > 0 ? (
+                {doctorsFromAPI.length === 0 ? (
+                  <div className="col-12">
+                    <div className="allDoctors-no-results">
+                      <h3>No doctors found in the database</h3>
+                      <p>Please check back later or contact support</p>
+                      <div className="mt-3">
+                        <p className="text-muted small">
+                          Debug Info: Doctors array is empty. Check if data is
+                          being fetched properly.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : currentDoctors.length > 0 ? (
                   currentDoctors.map((doctor) =>
                     viewMode === "grid" ? (
-                      <DoctorCardGrid key={doctor.id} doctor={doctor} />
+                      <DoctorCardGrid key={doctor.id || `doctor-${doctor.name}`} doctor={doctor} />
                     ) : (
-                      <DoctorCardList key={doctor.id} doctor={doctor} />
+                      <DoctorCardList key={doctor.id || `doctor-${doctor.name}`} doctor={doctor} />
                     )
                   )
                 ) : (
                   <div className="col-12">
                     <div className="allDoctors-no-results">
-                      <h3>No doctors found</h3>
+                      <h3>No doctors match your criteria</h3>
                       <p>Try adjusting your search or filters</p>
                       <button
                         className="btn btn-primary mt-2"

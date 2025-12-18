@@ -1,9 +1,8 @@
 import "./App.css";
 import "./index.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Provider } from "react-redux";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -16,8 +15,8 @@ import DoctorProfile from "./Doctor Profile/DoctorProfile";
 import Auth from "./Authentication/Auth";
 import Layout from "./Components/Layout";
 import HealthCare from "../src/HealthCare/HealthCare";
-import { store } from "./Redux/store";
 import { fetchDoctors } from "./Redux/doctorSlice";
+import { fetchUserProfile } from "./Redux/userSlice";
 import UserProfile from "./User/UserProfile";
 import About from "./Hospital/About";
 import NotFoundPage from "./Components/NotFoundPage";
@@ -28,11 +27,20 @@ import AuthGuard from "./Components/AuthGuard";
 // Component to initialize data fetching
 const AppInitializer = ({ children }) => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
     // Fetch doctors immediately when app loads
     dispatch(fetchDoctors());
   }, [dispatch]);
+
+  // Fetch user profile if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("User is authenticated, fetching profile...");
+      dispatch(fetchUserProfile());
+    }
+  }, [dispatch, isAuthenticated]);
 
   return children;
 };
@@ -64,7 +72,7 @@ const AppContent = () => {
             </AuthGuard>
           } />
           
-          <Route path="/doctor-profile/:id" element={
+          <Route path="/doctor-profile" element={
             <AuthGuard type="private">
               <DoctorProfile />
             </AuthGuard>
@@ -91,14 +99,12 @@ const AppContent = () => {
   );
 };
 
-// Root App Component
+// Main App Component - Now simpler without Provider
 function App() {
   return (
-    <Provider store={store}>
-      <AppInitializer>
-        <AppContent />
-      </AppInitializer>
-    </Provider>
+    <AppInitializer>
+      <AppContent />
+    </AppInitializer>
   );
 }
 

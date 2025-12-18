@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import {
   Star,
   MapPin,
@@ -22,28 +23,49 @@ import "./DoctorProfile.css";
 const DoctorProfile = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showTooltip, setShowTooltip] = useState(false);
 
   // Get doctors data from Redux store
-  const doctorsState = useSelector((state) => state.doctors);
-  
+   const doctorData = location.state?.doctor;
+  // const doctorsState = useSelector((state) => state.doctors);
+
   // Find the specific doctor by ID
-  const doctorData = doctorsState.doctors?.doctors?.find(
-    (doctor) => doctor.id === id
-  );
+  // const doctorData = doctorsState.doctors?.doctors?.find(
+  //   (doctor) => doctor.id === id
+  // );
+
+  const handleShare = (doctor) => {
+    const shareUrl = `${window.location.origin}/doctor/${doctor.id}`;
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: `Dr. ${doctor.name}`,
+          text: `Check out Dr. ${doctor.name}.`,
+          url: shareUrl,
+        })
+        .catch((err) => console.log(err));
+    } else {
+      alert("Sharing is not supported on this device.");
+    }
+  };
 
   // Calculate average rating from reviews
   const calculateAverageRating = () => {
-    if (!doctorData?.profile?.reviews || doctorData.profile.reviews.length === 0) {
+    if (
+      !doctorData?.profile?.reviews ||
+      doctorData.profile.reviews.length === 0
+    ) {
       return doctorData?.rating || 0;
     }
-    
+
     const totalRating = doctorData.profile.reviews.reduce((sum, review) => {
       return sum + review.rating;
     }, 0);
-    
+
     return (totalRating / doctorData.profile.reviews.length).toFixed(1);
   };
 
@@ -95,16 +117,12 @@ const DoctorProfile = () => {
 
   const nextImage = () => {
     const images = doctorData.profile?.images || defaultImages;
-    setCurrentImageIndex((prev) =>
-      prev === images.length - 1 ? 0 : prev + 1
-    );
+    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
   const prevImage = () => {
     const images = doctorData.profile?.images || defaultImages;
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? images.length - 1 : prev - 1
-    );
+    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const renderStars = (rating) => {
@@ -113,14 +131,16 @@ const DoctorProfile = () => {
       <Star
         key={index}
         size={16}
-        className={index < numericRating ? "text-warning fill-warning" : "text-muted"}
+        className={
+          index < numericRating ? "text-warning fill-warning" : "text-muted"
+        }
       />
     ));
   };
 
   const renderTabContent = () => {
     const images = doctorData.profile?.images || defaultImages;
-    
+
     switch (activeTab) {
       case "overview":
         return (
@@ -129,7 +149,9 @@ const DoctorProfile = () => {
               <div className="col-lg-8">
                 <div className="about-section">
                   <h4>About Me</h4>
-                  <p>{doctorData.profile?.about || "No information available."}</p>
+                  <p>
+                    {doctorData.profile?.about || "No information available."}
+                  </p>
                 </div>
 
                 <div className="education-section mt-4">
@@ -142,7 +164,11 @@ const DoctorProfile = () => {
                         Graduated: {edu.year}
                       </small>
                     </div>
-                  )) || <p className="text-muted">No education information available.</p>}
+                  )) || (
+                    <p className="text-muted">
+                      No education information available.
+                    </p>
+                  )}
                 </div>
 
                 <div className="services-section mt-4">
@@ -168,9 +194,9 @@ const DoctorProfile = () => {
                 <div className="memberships-section mt-4">
                   <h4>Memberships</h4>
                   <ul className="memberships-list">
-                    {doctorData.profile?.memberships?.map((membership, index) => (
-                      <li key={index}>{membership}</li>
-                    )) || <li className="text-muted">No memberships listed.</li>}
+                    {doctorData.profile?.memberships?.map(
+                      (membership, index) => <li key={index}>{membership}</li>
+                    ) || <li className="text-muted">No memberships listed.</li>}
                   </ul>
                 </div>
               </div>
@@ -226,11 +252,11 @@ const DoctorProfile = () => {
                   <Phone size={16} className="me-2" />
                   {contactData.phone}
                 </p>
-                <div className="location-features">
+                {/* <div className="location-features">
                   <span className="feature-badge">Parking Available</span>
                   <span className="feature-badge">Wheelchair Access</span>
                   <span className="feature-badge">Metro Access</span>
-                </div>
+                </div> */}
               </div>
               <div className="location-map">
                 <div className="map-placeholder">
@@ -249,12 +275,10 @@ const DoctorProfile = () => {
               <div className="rating-summary">
                 <div className="average-rating">
                   <h2>{averageRating}</h2>
-                  <div className="stars">
-                    {renderStars(averageRating)}
-                  </div>
-                  <p className="text-muted">
+                  <div className="stars">{renderStars(averageRating)}</div>
+                  {/* <p className="text-muted">
                     Based on {doctorData.profile?.reviews?.length || 0} reviews
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
@@ -337,7 +361,8 @@ const DoctorProfile = () => {
                     src={doctorData.image}
                     alt={doctorData.name}
                     onError={(e) => {
-                      e.target.src = "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face";
+                      e.target.src =
+                        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face";
                     }}
                   />
                 </div>
@@ -349,12 +374,16 @@ const DoctorProfile = () => {
                   <div className="doctor-meta">
                     <div className="meta-item">
                       <MapPin size={16} />
-                      <span>{doctorData.location || "Location not specified"}</span>
+                      <span>
+                        {doctorData.location || "Location not specified"}
+                      </span>
                     </div>
                     <div className="meta-item">
                       <Star size={16} />
                       <span>
-                        {averageRating} ({doctorData.profile?.reviews?.length || 0} reviews)
+                        {averageRating}
+                        {/* (
+                        {doctorData.profile?.reviews?.length || 0} ) */}
                       </span>
                     </div>
                     <div className="meta-item">
@@ -373,7 +402,10 @@ const DoctorProfile = () => {
                   {/* <button className="btn-favorite">
                     <Heart size={20} />
                   </button> */}
-                  <button className="btn-share">
+                  <button
+                    className="btn-share"
+                    onClick={() => handleShare(doctorData)}
+                  >
                     <Share2 size={20} />
                   </button>
                 </div>
@@ -382,25 +414,91 @@ const DoctorProfile = () => {
               {/* Contact & Social */}
               <div className="contact-social">
                 <div className="contact-inffo">
-                  <div className="contact-item">
-                    <Phone size={16} />
-                    <span>{contactData.phone}</span>
-                  </div>
-                  <div className="contact-item">
-                    <Mail size={16} />
-                    <span>{contactData.email}</span>
-                  </div>
+                  {/* Phone */}
+                  {doctorData.profile?.contact.phone && (
+                    <a
+                      href={`tel:${doctorData.profile?.contact.phone}`}
+                      className="contact-item text-decoration-none"
+                    >
+                      <Phone size={16} />
+                      <span>{doctorData.profile?.contact.phone}</span>
+                    </a>
+                  )}
+
+                  {/* Email */}
+                  {doctorData.profile?.contact.email && (
+                    <a
+                      href={`mailto:${doctorData.profile?.contact.email}`}
+                      className="contact-item text-decoration-none"
+                    >
+                      <Mail size={16} />
+                      <span>{doctorData.profile?.contact.email}</span>
+                    </a>
+                  )}
+
+                  {/* Website (only if available) */}
+                  {/* {doctorData.profile?.contact.website && (
+                    <a
+                      href={doctorData.profile?.contact.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="contact-item"
+                    >
+                      <Globe size={16} />
+                      <span>Visit Website</span>
+                    </a>
+                  )} */}
                 </div>
+
+                {/* Social Buttons */}
                 <div className="social-links">
-                  <button className="social-btn">
-                    <Facebook size={16} />
-                  </button>
-                  <button className="social-btn">
-                    <Twitter size={16} />
-                  </button>
-                  <button className="social-btn">
-                    <Linkedin size={16} />
-                  </button>
+                  {/* Facebook */}
+                  {doctorData.profile?.contact.facebook && (
+                    <a
+                      href={doctorData.profile?.contact.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-btn"
+                    >
+                      <Facebook size={16} />
+                    </a>
+                  )}
+
+                  {/* Twitter */}
+                  {doctorData.profile?.contact.twitter && (
+                    <a
+                      href={doctorData.profile?.contact.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-btn"
+                    >
+                      <Twitter size={16} />
+                    </a>
+                  )}
+
+                  {/* Instagram */}
+                  {doctorData.profile?.contact.instagram && (
+                    <a
+                      href={doctorData.profile?.contact.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-btn"
+                    >
+                      <Instagram size={16} />
+                    </a>
+                  )}
+
+                  {/* LinkedIn */}
+                  {doctorData.profile?.contact.linkedin && (
+                    <a
+                      href={doctorData.profile?.contact.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-btn"
+                    >
+                      <Linkedin size={16} />
+                    </a>
+                  )}
                 </div>
               </div>
 
@@ -430,32 +528,42 @@ const DoctorProfile = () => {
               <div className="booking-card">
                 <h4>Book Appointment</h4>
 
-                <div className="fee-section">
+                {/* <div className="fee-section">
                   <span className="fee-label">Consultation Fee</span>
                   <span className="fee-amount">${doctorData.fee}</span>
-                </div>
+                </div> */}
 
-                <div className="availability-section">
+                <div className="availability-section d-flex justify-content-between">
                   <div className="availability-status">
                     <div
                       className={`status-indicator ${
                         doctorData.availableToday ? "available" : "unavailable"
                       }`}
                     ></div>
-                    <span>{doctorData.availableToday ? "Available Today" : "Not Available"}</span>
+                    <span>
+                      {doctorData.availableToday
+                        ? "Available Today"
+                        : "Not Available"}
+                    </span>
                   </div>
-                  <p className="next-available">
-                    Next: {doctorData.nextAvailable}
-                  </p>
+                  {doctorData.nextAvailable && (
+                    <p className="next-available">
+                      Next: {doctorData.nextAvailable}
+                    </p>
+                  )}
                 </div>
 
-                <div 
-                  className={`booking-actions ${ !doctorData.availableToday ? 'disabled-buttons' : ''}`}
+                <div
+                  className={`booking-actions ${
+                    !doctorData.availableToday ? "disabled-buttons" : ""
+                  }`}
                   onMouseEnter={() => true && setShowTooltip(true)}
                   onMouseLeave={() => setShowTooltip(false)}
                 >
                   <button
-                    className={`btn-book-now ${!doctorData.availableToday ? 'disabled' : ''}`}
+                    className={`btn-book-now ${
+                      !doctorData.availableToday ? "disabled" : ""
+                    }`}
                     onClick={handleBookAppointment}
                     disabled={!doctorData.availableToday}
                   >
@@ -465,8 +573,10 @@ const DoctorProfile = () => {
                       <XCircle size={16} className="ms-2 denied-icon" />
                     )}
                   </button>
-                  <button 
-                    className={`btn-consult-online ${!doctorData.availableToday ? 'disabled' : ''}`}
+                  <button
+                    className={`btn-consult-online ${
+                      !doctorData.availableToday ? "disabled" : ""
+                    }`}
                     disabled={!doctorData.availableToday}
                   >
                     <Phone size={16} className="me-2" />
@@ -480,7 +590,10 @@ const DoctorProfile = () => {
                   {showTooltip && !doctorData.availableToday && (
                     <div className="availability-tooltip">
                       <XCircle size={16} />
-                      <span className="">Doctor is not available today. Next available: {doctorData.nextAvailable}</span>
+                      <span className="">
+                        Doctor is not available today. Next available:{" "}
+                        {doctorData.nextAvailable}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -488,15 +601,15 @@ const DoctorProfile = () => {
                 <div className="quick-info">
                   <div className="info-item">
                     <strong>Response Time:</strong>
-                    <span>Within 15 minutes</span>
+                    <span>{doctorData.response_time}</span>
                   </div>
                   <div className="info-item">
                     <strong>Follow-up:</strong>
-                    <span>No charge</span>
+                    <span>{doctorData.follow_up}</span>
                   </div>
                   <div className="info-item">
                     <strong>Cancellation:</strong>
-                    <span>Free cancellation</span>
+                    <span>{doctorData.cancellation}</span>
                   </div>
                 </div>
               </div>
@@ -505,13 +618,12 @@ const DoctorProfile = () => {
                 <h5>Similar Doctors</h5>
                 {/* You can add similar doctors logic here based on specialty */}
                 <div className="similar-doctor-card">
-                  <img
-                    src={doctorData.image}
-                    alt="Similar Doctor"
-                  />
+                  <img src={doctorData.image} alt="Similar Doctor" />
                   <div className="similar-doctor-info">
                     <h6>{doctorData.name}</h6>
-                    <p>{doctorData.specialty} • {averageRating} ★</p>
+                    <p>
+                      {doctorData.specialty} • {averageRating} ★
+                    </p>
                   </div>
                 </div>
               </div>

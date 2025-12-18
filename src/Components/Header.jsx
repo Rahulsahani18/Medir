@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../Redux/authSlice";
 import { useState, useRef, useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -40,6 +41,16 @@ export default function Header() {
   const handleLogout = () => {
     dispatch(logout());
     setDropdownOpen(false);
+
+    toast.info("Logged out successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+
     navigate("/");
   };
 
@@ -71,7 +82,7 @@ export default function Header() {
     if (user?.firstname) {
       return user.firstname;
     } else if (user?.email) {
-      return user.email.split('@')[0]; // Get part before @
+      return user.email.split("@")[0]; // Get part before @
     }
     return "User";
   };
@@ -210,7 +221,9 @@ export default function Header() {
                       color: "#6c757d",
                       fontSize: "14px",
                       transition: "transform 0.3s",
-                      transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                      transform: dropdownOpen
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
                     }}
                   />
                 </button>
@@ -235,17 +248,19 @@ export default function Header() {
                         {user?.email || "User"}
                       </div>
                     </div>
-                    
+
                     <button
                       className="dropdown-item d-flex align-items-center gap-2 px-3 py-2"
                       onClick={handleProfileClick}
                     >
-                      <FaUserCircle style={{ color: "#6c757d", fontSize: "16px" }} />
+                      <FaUserCircle
+                        style={{ color: "#6c757d", fontSize: "16px" }}
+                      />
                       <span>My Profile</span>
                     </button>
-                    
+
                     <div className="dropdown-divider"></div>
-                    
+
                     <button
                       className="dropdown-item d-flex align-items-center gap-2 px-3 py-2 text-danger"
                       onClick={handleLogout}

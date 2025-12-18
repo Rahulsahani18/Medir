@@ -306,6 +306,7 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease-in-out;
+  aspect-ratio: 2/1.9;
 }
 
 /* Zoom effect */
@@ -1017,6 +1018,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  aspect-ratio: 2/2;
 }
 
 .grid-overlay-item {
