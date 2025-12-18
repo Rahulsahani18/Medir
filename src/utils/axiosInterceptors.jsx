@@ -1,5 +1,3 @@
-// src/utils/apiClient.js (FIXED VERSION)
-
 import axios from "axios";
 import { logout } from "../Redux/authSlice";
 import { toast } from "react-toastify";
@@ -17,40 +15,24 @@ const apiClient = axios.create({
   timeout: 30000,
 });
 
-// Force form-urlencoded for POST/PUT/PATCH to avoid preflight
-apiClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-apiClient.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
-apiClient.defaults.headers.patch['Content-Type'] = 'application/x-www-form-urlencoded';
+// Use default Content-Type for POST/PUT/PATCH
+// If your backend expects form-data, keep 'application/x-www-form-urlencoded'
+// If your backend expects JSON, use 'application/json'
+apiClient.defaults.headers.post['Content-Type'] = 'application/json';
+apiClient.defaults.headers.put['Content-Type'] = 'application/json';
+apiClient.defaults.headers.patch['Content-Type'] = 'application/json';
 
-// 🔥 Attach token WITHOUT using Authorization header
+// Request interceptor: Attach token in Authorization header
+// This is the standard way that your backend expects
 apiClient.interceptors.request.use(
   (config) => {
     if (storeRef) {
       const state = storeRef.getState();
       const token = state.auth?.access_token;
 
-      if (token) {
-        if (config.method === 'get') {
-          // For GET: send as query param
-          config.params = config.params || {};
-          config.params.access_token = token;
-        } else {
-          // For POST/PUT/PATCH/DELETE: send in body
-          // Convert data to URLSearchParams if not already
-          if (config.data instanceof URLSearchParams) {
-            config.data.append('access_token', token);
-          } else {
-            const formData = new URLSearchParams();
-            // Copy existing data
-            if (config.data) {
-              Object.keys(config.data).forEach(key => {
-                formData.append(key, config.data[key]);
-              });
-            }
-            formData.append('access_token', token);
-            config.data = formData;
-          }
-        }
+      // IMPORTANT: Only add Authorization header if token exists
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;
@@ -58,30 +40,39 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Keep your 401 handler (unchanged)
+// Response interceptor
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // ✅ Return only the data for successful responses
+    return response.data;
+  },
   (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    // Only handle 401 if we have a store reference
+    if (error.response?.status === 401 && storeRef) {
+      const originalRequest = error.config;
+      
+      // Prevent infinite retry loops
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
+        
+        toast.error("Your session has expired. Please login again.", {
+          position: "top-right",
+          autoClose: 2500,
+        });
 
-      toast.error("Your session has expired. Please login again.", {
-        position: "top-right",
-        autoClose: 2500,
-      });
+        // Dispatch logout to clear tokens from Redux state
+        storeRef.dispatch(logout());
 
-      if (storeRef) storeRef.dispatch(logout());
-
-      setTimeout(() => {
-        if (window.location.pathname !== "/auth") {
-          window.location.href = "/auth";
-        }
-      }, 2500);
-
-      return Promise.reject(new Error("Session expired"));
+        setTimeout(() => {
+          if (window.location.pathname !== "/auth") {
+            window.location.href = "/auth";
+          }
+        }, 2500);
+      }
     }
-    return Promise.reject(error);
+    
+    // Return the error data for the thunk to handle
+    return Promise.reject(error.response?.data || error);
   }
 );
 
