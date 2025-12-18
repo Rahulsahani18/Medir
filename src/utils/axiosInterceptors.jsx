@@ -1,4 +1,4 @@
-// src/utils/apiClient.js (updated)
+// src/utils/apiClient.js (FIXED VERSION)
 
 import axios from "axios";
 import { logout } from "../Redux/authSlice";
@@ -17,14 +17,12 @@ const apiClient = axios.create({
   timeout: 30000,
 });
 
-// 🔥 CRITICAL CHANGE: Override default Content-Type for POST/PUT/PATCH
-// This prevents preflight when combined with no custom headers
+// Force form-urlencoded for POST/PUT/PATCH to avoid preflight
 apiClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 apiClient.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
 apiClient.defaults.headers.patch['Content-Type'] = 'application/x-www-form-urlencoded';
 
-// Request interceptor: Attach token via query param instead of header
-// This avoids custom "Authorization" header → no preflight!
+// 🔥 Attach token WITHOUT using Authorization header
 apiClient.interceptors.request.use(
   (config) => {
     if (storeRef) {
@@ -32,17 +30,27 @@ apiClient.interceptors.request.use(
       const token = state.auth?.access_token;
 
       if (token) {
-        // Option 1: Send token as query param (works for GET, POST, etc.)
-        config.params = config.params || {};
-        config.params.access_token = token;
-
-        // Option 2 (Alternative): Send in body for POST/PUT (if you prefer)
-        // if (config.method !== 'get' && config.data) {
-        //   config.data = new URLSearchParams({
-        //     ...config.data,
-        //     access_token: token
-        //   });
-        // }
+        if (config.method === 'get') {
+          // For GET: send as query param
+          config.params = config.params || {};
+          config.params.access_token = token;
+        } else {
+          // For POST/PUT/PATCH/DELETE: send in body
+          // Convert data to URLSearchParams if not already
+          if (config.data instanceof URLSearchParams) {
+            config.data.append('access_token', token);
+          } else {
+            const formData = new URLSearchParams();
+            // Copy existing data
+            if (config.data) {
+              Object.keys(config.data).forEach(key => {
+                formData.append(key, config.data[key]);
+              });
+            }
+            formData.append('access_token', token);
+            config.data = formData;
+          }
+        }
       }
     }
     return config;
@@ -50,7 +58,7 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Keep your 401 handler
+// Keep your 401 handler (unchanged)
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
