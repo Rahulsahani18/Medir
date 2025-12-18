@@ -1,79 +1,70 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../utils/api';
+import { api } from '../../utils/api'; // Adjust path if needed
 
-// ✅ INITIAL STATE
 const initialState = {
   user: null,
   access_token: null,
   refresh_token: null,
   loading: false,
   error: null,
-  isAuthenticated: false
+  isAuthenticated: false,
 };
 
-// ✅ REGISTER USER - Using form-urlencoded to avoid CORS preflight
+// REGISTER USER
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const formData = new URLSearchParams();
-      formData.append('first_name', userData.firstname);
-      formData.append('last_name', userData.lastname);
-      formData.append('email', userData.email);
-      formData.append('mobile', userData.phone);
-      formData.append('password', userData.password);
-      formData.append('confirm_password', userData.confirmPassword);
-
-      const response = await api.post('/signup', formData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+      const response = await api.post('/signup', {
+        first_name: userData.firstname,
+        last_name: userData.lastname,
+        email: userData.email,
+        mobile: userData.phone,
+        password: userData.password,
+        confirm_password: userData.confirmPassword,
       });
 
-      console.log("Register Response:", response);
+      console.log('Register Response:', response);
 
-      return response; // Let Redux Persist handle storage if needed
+      // Assuming API returns { status: true, message: "..." } on success
+      if (response.status === true) {
+        return response;
+      } else {
+        return rejectWithValue(response);
+      }
     } catch (error) {
-      console.error("Register Error:", error);
+      console.error('Register Error:', error);
       return rejectWithValue({
         status: false,
-        message: error.response?.data?.message || error.message || 'Registration failed'
+        message: error.message || 'Registration failed',
       });
     }
   }
 );
 
-// ✅ LOGIN USER - Using form-urlencoded to avoid CORS preflight
+// LOGIN USER
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (loginData, { rejectWithValue }) => {
     try {
-      const formData = new URLSearchParams();
-      formData.append('email', loginData.email);
-      formData.append('password', loginData.password);
-
-      const response = await api.post('/login', formData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+      const response = await api.post('/login', {
+        email: loginData.email,
+        password: loginData.password,
       });
 
-      console.log("Login Response:", response);
+      console.log('Login Response:', response);
 
-      // Adjust based on your actual API response structure
-      // Common patterns: { status: true, access_token: "...", user: {...} }
-      // or { data: { access_token: ... }, message: "success" }
-
-      if (response?.access_token || (response?.status === true && response?.data?.access_token)) {
-        return response; // Full response or normalized
+      // Adjust based on your actual API response
+      if (response.access_token || (response.status === true && response.access_token)) {
+        return response;
       } else {
-        throw new Error(response?.message || 'Invalid credentials');
+        return rejectWithValue(response);
       }
     } catch (error) {
-      console.error("Login Error:", error);
+      console.error('Login Error:', error);
       return rejectWithValue({
         status: false,
-        message: error.response?.data?.message || error.message || 'Login failed'
+        message: error.message || 'Login failed',
       });
     }
   }
@@ -104,29 +95,27 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // === REGISTER ===
+      // Register
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        // Assuming registration doesn't auto-login
-        // You can optionally auto-login here if API returns token
         state.user = {
           firstname: action.meta.arg.firstname,
           lastname: action.meta.arg.lastname,
           email: action.meta.arg.email,
           phone: action.meta.arg.phone,
         };
-        state.isAuthenticated = false;
+        state.isAuthenticated = false; // Registration ≠ login
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // === LOGIN ===
+      // Login
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -135,19 +124,16 @@ const authSlice = createSlice({
         state.loading = false;
 
         const payload = action.payload;
+        const token = payload.access_token || payload.data?.access_token;
+        const refresh = payload.refresh_token || payload.data?.refresh_token;
+        const user = payload.user || payload.data?.user || { email: action.meta.arg.email };
 
-        // Flexible handling for different response shapes
-        const accessToken = payload.access_token || payload.data?.access_token;
-        const refreshToken = payload.refresh_token || payload.data?.refresh_token;
-        const userData = payload.user || payload.data?.user || { email: action.meta.arg.email };
-
-        if (accessToken) {
+        if (token) {
           state.isAuthenticated = true;
-          state.access_token = accessToken;
-          state.refresh_token = refreshToken || null;
-          state.user = userData;
+          state.access_token = token;
+          state.refresh_token = refresh || null;
+          state.user = user;
         } else {
-          state.isAuthenticated = false;
           state.error = { message: payload.message || 'Login failed' };
         }
       })
