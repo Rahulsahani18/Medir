@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../utils/api'; // Import the simple API utility
+import apiClient from '../utils/axiosInterceptors'; // Import the simple API utility
 
 // Async thunk for fetching doctors
 export const fetchDoctors = createAsyncThunk(
@@ -7,10 +7,10 @@ export const fetchDoctors = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       // Simple API call using our utility
-      const response = await api.get('/doctors');
-      
+      const response = await apiClient.get('/doctors');
+
       // The api.get() already parses JSON, so response is the data object
-      return response;
+      return response.data;
     } catch (error) {
       return rejectWithValue({ 
         message: error.message || 'Failed to fetch doctors' 
