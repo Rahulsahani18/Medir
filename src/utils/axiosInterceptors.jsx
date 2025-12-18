@@ -18,9 +18,9 @@ const apiClient = axios.create({
 // Use default Content-Type for POST/PUT/PATCH
 // If your backend expects form-data, keep 'application/x-www-form-urlencoded'
 // If your backend expects JSON, use 'application/json'
-apiClient.defaults.headers.post['Content-Type'] = 'application/json';
-apiClient.defaults.headers.put['Content-Type'] = 'application/json';
-apiClient.defaults.headers.patch['Content-Type'] = 'application/json';
+apiClient.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+apiClient.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
+apiClient.defaults.headers.patch['Content-Type'] = 'application/x-www-form-urlencoded';
 
 // Request interceptor: Attach token in Authorization header
 // This is the standard way that your backend expects
