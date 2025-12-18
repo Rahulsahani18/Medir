@@ -10,7 +10,7 @@ export const fetchDoctors = createAsyncThunk(
       const response = await apiClient.get('/doctors');
 
       // The api.get() already parses JSON, so response is the data object
-      return response.data;
+      return response;
     } catch (error) {
       return rejectWithValue({ 
         message: error.message || 'Failed to fetch doctors' 
