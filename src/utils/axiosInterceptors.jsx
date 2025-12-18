@@ -49,7 +49,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     // ✅ Return only the data for successful responses
-    return response.data;
+    return response;
   },
   (error) => {
     // Don't auto-logout if it's a login request
